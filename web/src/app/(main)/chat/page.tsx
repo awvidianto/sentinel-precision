@@ -72,11 +72,11 @@ const CONVERSATION_LIST_PAGE = 100;
 // Which agent groups the user has collapsed in the left rail. Persisted so the
 // rail looks the same after a reload; unknown keys are harmless (a deleted agent
 // simply never renders a group again).
-const COLLAPSED_AGENTS_KEY = "artex.chat.collapsed-agents";
+const COLLAPSED_AGENTS_KEY = "sentinelprecision.chat.collapsed-agents";
 // The conversation that was open when the user last left the chat page. The
 // sidebar links to a bare /chat, so without this, coming back from another page
 // always lands on the empty draft view. A ?c= in the URL takes precedence.
-const LAST_CONVERSATION_KEY = "artex.chat.last-conversation";
+const LAST_CONVERSATION_KEY = "sentinelprecision.chat.last-conversation";
 
 function conversationIsPinned(conversation: Conversation): boolean {
   return conversation.pinned ?? Boolean(conversation.pinned_at);

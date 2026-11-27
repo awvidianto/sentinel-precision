@@ -8,20 +8,20 @@ directory, bucket objects, and the credentials or roles needed to read them.
 
 ## Configuration
 
-Use a private bucket and a separate prefix for each ARTEX installation. Configure
+Use a private bucket and a separate prefix for each Sentinel Precision installation. Configure
 the bucket's default encryption to match the selected mode below, and enforce
-that mode/key with a bucket policy. ARTEX does not provision or inspect bucket
+that mode/key with a bucket policy. Sentinel Precision does not provision or inspect bucket
 encryption settings.
 
-Set the following server environment and restart ARTEX:
+Set the following server environment and restart Sentinel Precision:
 
 ```dotenv
-ARTEX_ARCHIVE_STORAGE=s3
-ARTEX_ARCHIVE_S3_ENDPOINT=https://s3.us-east-1.amazonaws.com
-ARTEX_ARCHIVE_S3_REGION=us-east-1
-ARTEX_ARCHIVE_S3_BUCKET=your-artex-archives
-ARTEX_ARCHIVE_S3_PREFIX=artex/tasks
-ARTEX_ARCHIVE_S3_SSE=AES256
+SENTINEL_PRECISION_ARCHIVE_STORAGE=s3
+SENTINEL_PRECISION_ARCHIVE_S3_ENDPOINT=https://s3.us-east-1.amazonaws.com
+SENTINEL_PRECISION_ARCHIVE_S3_REGION=us-east-1
+SENTINEL_PRECISION_ARCHIVE_S3_BUCKET=your-sentinelprecision-archives
+SENTINEL_PRECISION_ARCHIVE_S3_PREFIX=sentinelprecision/tasks
+SENTINEL_PRECISION_ARCHIVE_S3_SSE=AES256
 ```
 
 With an EC2 instance role, ECS task role or other SDK-supported credential source,
@@ -29,17 +29,17 @@ no archive-specific access keys are needed.
 
 | Variable | Meaning |
 | --- | --- |
-| `ARTEX_ARCHIVE_STORAGE` | `local` (default) or `s3`. |
-| `ARTEX_ARCHIVE_S3_ENDPOINT` | Required HTTPS origin, without bucket/path/query. Loopback HTTP is allowed for local tests. |
-| `ARTEX_ARCHIVE_S3_REGION` | Signing region; defaults to `us-east-1`. |
-| `ARTEX_ARCHIVE_S3_BUCKET` | Required bucket name. |
-| `ARTEX_ARCHIVE_S3_PREFIX` | Object prefix; defaults to `artex/tasks`. |
-| `ARTEX_ARCHIVE_S3_SSE` | `AES256` (default, SSE-S3) or `aws:kms` (SSE-KMS). There is no unencrypted mode. |
-| `ARTEX_ARCHIVE_S3_KMS_KEY_ID` | Optional full KMS key ARN (not an alias or bare key ID); valid only with `aws:kms`. Omit to use the provider's managed KMS key. |
-| `ARTEX_ARCHIVE_S3_ACCESS_KEY_ID` | Optional dedicated credential override; must be supplied with the secret key. |
-| `ARTEX_ARCHIVE_S3_SECRET_ACCESS_KEY` | Secret for the dedicated override. |
-| `ARTEX_ARCHIVE_S3_SESSION_TOKEN` | Optional session token for dedicated temporary credentials. |
-| `ARTEX_ARCHIVE_S3_PATH_STYLE` | `true` for path-style servers; otherwise virtual-hosted addressing is used. |
+| `SENTINEL_PRECISION_ARCHIVE_STORAGE` | `local` (default) or `s3`. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_ENDPOINT` | Required HTTPS origin, without bucket/path/query. Loopback HTTP is allowed for local tests. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_REGION` | Signing region; defaults to `us-east-1`. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_BUCKET` | Required bucket name. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_PREFIX` | Object prefix; defaults to `sentinelprecision/tasks`. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_SSE` | `AES256` (default, SSE-S3) or `aws:kms` (SSE-KMS). There is no unencrypted mode. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_KMS_KEY_ID` | Optional full KMS key ARN (not an alias or bare key ID); valid only with `aws:kms`. Omit to use the provider's managed KMS key. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_ACCESS_KEY_ID` | Optional dedicated credential override; must be supplied with the secret key. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_SECRET_ACCESS_KEY` | Secret for the dedicated override. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_SESSION_TOKEN` | Optional session token for dedicated temporary credentials. |
+| `SENTINEL_PRECISION_ARCHIVE_S3_PATH_STYLE` | `true` for path-style servers; otherwise virtual-hosted addressing is used. |
 
 An invalid mode or partial credential override fails configuration instead of
 silently falling back to local storage or ambient credentials. Preserve the
@@ -51,14 +51,14 @@ Older local archives remain usable; they are not uploaded automatically.
 Every single-object upload and multipart initiation explicitly requests the
 configured server-side encryption. Upload verification also requires HEAD to
 report the requested mode and a nonempty KMS key identifier for SSE-KMS. When a
-key ARN is configured, HEAD must return that exact ARN before ARTEX accepts
+key ARN is configured, HEAD must return that exact ARN before Sentinel Precision accepts
 the object. Size and full SHA-256 readback remain mandatory; encryption metadata
 does not replace content verification.
 
-For SSE-KMS, set both the bucket's default encryption and ARTEX to `aws:kms`;
-set `ARTEX_ARCHIVE_S3_KMS_KEY_ID` to the intended key when using a customer-managed
+For SSE-KMS, set both the bucket's default encryption and Sentinel Precision to `aws:kms`;
+set `SENTINEL_PRECISION_ARCHIVE_S3_KMS_KEY_ID` to the intended key when using a customer-managed
 key. An explicit `AES256` request takes precedence over a bucket's KMS default,
-so do not leave ARTEX on SSE-S3 when the bucket is intended to use KMS.
+so do not leave Sentinel Precision on SSE-S3 when the bucket is intended to use KMS.
 
 The principal needs object upload, read (HEAD and ranged GET), delete and
 multipart upload/abort permissions. For versioned buckets, grant
@@ -78,7 +78,7 @@ and [HEAD encryption response rules](https://docs.aws.amazon.com/AmazonS3/latest
 
 ## Credential sources
 
-Without the archive-specific override, ARTEX uses the AWS SDK default credential
+Without the archive-specific override, Sentinel Precision uses the AWS SDK default credential
 chain, including standard AWS environment variables, shared profiles, web
 identity, ECS task credentials and EC2 instance credentials through IMDS. Role
 credentials retain the SDK's automatic refresh behavior. A named shared profile
@@ -91,7 +91,7 @@ over ambient AWS credentials. Operator-supplied temporary credentials must be
 rotated by the operator; they are not an IAM role provider.
 
 At server startup, the archive client captures its credential configuration before
-ARTEX removes archive-specific keys and supported ambient AWS credential variables
+Sentinel Precision removes archive-specific keys and supported ambient AWS credential variables
 from the process environment. Agent shells, tools and MCP stdio servers therefore
 do not inherit those values. Role providers retain the configuration needed for
 refresh. This environment cleanup does not restrict access to shared credential
@@ -108,13 +108,13 @@ See the [AWS SDK credential-chain documentation](https://docs.aws.amazon.com/sdk
 ## Lifecycle
 
 1. Pause or finish a task and use its **Archive** action.
-2. ARTEX stages the source files and builds a local `.tar.zst` package. Large
+2. Sentinel Precision stages the source files and builds a local `.tar.zst` package. Large
    packages use multipart upload, initially 8 MiB parts with two upload workers;
    the SDK increases the part size for exceptionally large seekable files.
-3. ARTEX confirms encryption metadata and reads the complete object back,
+3. Sentinel Precision confirms encryption metadata and reads the complete object back,
    checking size and SHA-256. ETags and uploaded checksum metadata alone are
    insufficient.
-4. **Only after verification and a successful PostgreSQL commit** does ARTEX
+4. **Only after verification and a successful PostgreSQL commit** does Sentinel Precision
    remove the local package and staged source files. The committed archive
    location is an `s3://` URI; there is no schema or archive-format migration.
 5. **Restore** downloads and verifies before installing files and database rows.
@@ -175,7 +175,7 @@ processed once the failed cleanup request returns.
 
 ## Optional connectivity check
 
-Run `go run ./cmd/artex-archive-check` with the archive environment to upload,
+Run `go run ./cmd/sentinelprecision-archive-check` with the archive environment to upload,
 verify, download and delete a small unique object. It performs real bucket
 operations but does not touch task data, and reports cleanup failures.
 

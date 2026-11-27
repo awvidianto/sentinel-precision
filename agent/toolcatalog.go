@@ -44,7 +44,7 @@ type ToolSeed struct {
 // their documentation lives in Prompt() (this table only covers Description(),
 // which would create misleading half-coverage). Not seeded → no DB row →
 // ToolResolve passes them through untouched for agents whose base includes them.
-// Only artex's own domain tools enter the table as manageable.
+// Only sentinelprecision's own domain tools enter the table as manageable.
 func builtinToolsByAgent() map[string][]actool.CoreTool {
 	ts := NewToolSet(nil, "")
 	return map[string][]actool.CoreTool{

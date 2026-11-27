@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Autumn-27/artex/db"
 	"github.com/Autumn-27/norma/llm"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // ContextTelemetryEnv switches per-call context size telemetry into llm_context.
@@ -17,8 +17,8 @@ import (
 // discussed from the task's total tokens, not from a breakdown (2026-11-22).
 // Cost: one row per model call plus length counts; no content is stored (up to about
 // 300 calls per run in the bench logs, so up to about 300 rows).
-// Explicit off switch: ARTEX_CONTEXT_TELEMETRY=0|false|off|no.
-const ContextTelemetryEnv = "ARTEX_CONTEXT_TELEMETRY"
+// Explicit off switch: SENTINEL_PRECISION_CONTEXT_TELEMETRY=0|false|off|no.
+const ContextTelemetryEnv = "SENTINEL_PRECISION_CONTEXT_TELEMETRY"
 
 // ContextTelemetryEnabled reports whether context telemetry is on. Default true;
 // only an explicit falsy value (0, false, off, no; case-insensitive) turns it off.

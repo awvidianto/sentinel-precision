@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/artex/traffic/rewrite"
+	"github.com/awvidianto/sentinel-precision/traffic/rewrite"
 )
 
 func TestHARRoundTripPlainBase64BinaryEmptyAndLargeBlob(t *testing.T) {
@@ -197,7 +197,7 @@ func TestHARRoundTripPlainBase64BinaryEmptyAndLargeBlob(t *testing.T) {
 	if meta.Exported != 4 || meta.TotalMatched != 4 || meta.Truncated || meta.TruncatedReason != "" {
 		t.Fatalf("ExportHAR meta = %+v", meta)
 	}
-	if exported.Log.Version != "1.2" || exported.Log.Creator.Name != "ARTEX" || exported.Log.Creator.Version != "2.3.0" {
+	if exported.Log.Version != "1.2" || exported.Log.Creator.Name != "Sentinel Precision" || exported.Log.Creator.Version != "2.3.0" {
 		t.Fatalf("ExportHAR header = %+v", exported.Log)
 	}
 	if len(exported.Log.Entries) != 4 {
@@ -504,7 +504,7 @@ func TestHARTwoIdenticalExchangesRoundTripPreservesBoth(t *testing.T) {
 	}
 	defer src.Close()
 
-	// Two distinct ARTEX exchanges recorded in the same second with identical
+	// Two distinct Sentinel Precision exchanges recorded in the same second with identical
 	// method, URL, status, headers, and bodies.
 	for _, id := range []string{"dup-a", "dup-b"} {
 		if _, err := src.DB().Exec(`INSERT INTO exchanges(id,ts,host,method,url_template,url,status,content_type,req_len,resp_len,path)
@@ -524,9 +524,9 @@ VALUES(?,'POST /ping HTTP/1.1\nHost: same.example\n',?,'HTTP/1.1 200 OK\n',?)`, 
 	if meta.Exported != 2 || len(exported.Log.Entries) != 2 {
 		t.Fatalf("export = %+v, want 2 entries", meta)
 	}
-	if exported.Log.Entries[0].ArtexExchangeID != "dup-a" || exported.Log.Entries[1].ArtexExchangeID != "dup-b" {
-		t.Fatalf("exported _artexExchangeId = [%q %q], want [dup-a dup-b]",
-			exported.Log.Entries[0].ArtexExchangeID, exported.Log.Entries[1].ArtexExchangeID)
+	if exported.Log.Entries[0].SentinelPrecisionExchangeID != "dup-a" || exported.Log.Entries[1].SentinelPrecisionExchangeID != "dup-b" {
+		t.Fatalf("exported _sentinelPrecisionExchangeId = [%q %q], want [dup-a dup-b]",
+			exported.Log.Entries[0].SentinelPrecisionExchangeID, exported.Log.Entries[1].SentinelPrecisionExchangeID)
 	}
 	raw, err := json.Marshal(exported)
 	if err != nil {

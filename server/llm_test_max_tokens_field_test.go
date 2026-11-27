@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // The llm/test button must send the output cap under the key the profile is

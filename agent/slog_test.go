@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Autumn-27/artex/llmrec"
+	"github.com/awvidianto/sentinel-precision/llmrec"
 )
 
 type recordCaptureHandler struct {

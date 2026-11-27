@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 func TestInheritedActivityDetailAndRelationDeletion(t *testing.T) {

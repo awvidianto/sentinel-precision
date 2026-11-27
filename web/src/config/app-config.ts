@@ -5,11 +5,11 @@ import { t } from "@/i18n";
 const currentYear = new Date().getFullYear();
 
 export const APP_CONFIG = {
-  name: "ARTEX",
+  name: "Sentinel Precision",
   version: packageJson.version,
-  copyright: `© ${currentYear}, ARTEX.`,
+  copyright: `© ${currentYear}, Sentinel Precision.`,
   meta: {
-    title: t("ARTEX — Autonomous Penetration Testing Console"),
+    title: t("Sentinel Precision — Autonomous Penetration Testing Console"),
     description: t("Console for the LLM-driven autonomous penetration testing system"),
   },
 };

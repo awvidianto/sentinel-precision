@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/egress"
+	"github.com/awvidianto/sentinel-precision/egress"
 )
 
 // remoteAddrConn reports a chosen remote address so negotiateAuth can be driven

@@ -11,16 +11,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // csrfRequest builds a request to http://example.com (the httptest default
-// host) with the given headers. A "Cookie" value is the artex_token cookie.
+// host) with the given headers. A "Cookie" value is the sentinelprecision_token cookie.
 func csrfRequest(method, path, body string, headers map[string]string) *http.Request {
 	r := httptest.NewRequest(method, path, strings.NewReader(body))
 	for k, v := range headers {
 		if k == "Cookie" {
-			r.AddCookie(&http.Cookie{Name: "artex_token", Value: v})
+			r.AddCookie(&http.Cookie{Name: "sentinelprecision_token", Value: v})
 			continue
 		}
 		r.Header.Set(k, v)
@@ -28,7 +28,7 @@ func csrfRequest(method, path, body string, headers map[string]string) *http.Req
 	return r
 }
 
-// A session that arrives as the artex_token cookie is sent by the browser on
+// A session that arrives as the sentinelprecision_token cookie is sent by the browser on
 // its own, so a state-changing request that carries it must come from the
 // console's own origin. requireAuth is exercised directly, without a database.
 func TestCookieStateChangeNeedsSameOrigin(t *testing.T) {
@@ -173,7 +173,7 @@ func TestCookieCSRFThroughRealMux(t *testing.T) {
 	stale := token(rec)
 	// Login the same way, then from the browser: the login page posts from the
 	// console's own origin and may still hold the cookie of an earlier session.
-	login := `{"username":"ARTEX","password":"correct-horse-1"}`
+	login := `{"username":"Sentinel Precision","password":"correct-horse-1"}`
 	rec = httptest.NewRecorder()
 	h.ServeHTTP(rec, csrfRequest("POST", "/api/auth/login", login, nil))
 	token(rec)

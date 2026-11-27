@@ -109,7 +109,7 @@ func TestTelegramPackingUsesRuneBudget(t *testing.T) {
 func TestTelegramPackingCountsEscapedText(t *testing.T) {
 	m := batchMsg(200)
 	m.WindowMinutes = 60
-	m.HomeURL = "https://artex.example.com/"
+	m.HomeURL = "https://sentinelprecision.example.com/"
 	for i := range m.Items {
 		m.Items[i].Name = "Reflected XSS <script> in q param of /search, vuln" + itoa(i+1) + " end"
 		m.Items[i].Assets = []string{"https://shop.example.com/search?q=1&lang=en"}

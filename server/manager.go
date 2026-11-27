@@ -17,16 +17,16 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/config"
-	pgdb "github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/egress"
-	"github.com/Autumn-27/artex/enrich"
-	"github.com/Autumn-27/artex/guard"
-	"github.com/Autumn-27/artex/intercept"
-	"github.com/Autumn-27/artex/traffic"
-	"github.com/Autumn-27/artex/traffic/rewrite"
 	actool "github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/config"
+	pgdb "github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/egress"
+	"github.com/awvidianto/sentinel-precision/enrich"
+	"github.com/awvidianto/sentinel-precision/guard"
+	"github.com/awvidianto/sentinel-precision/intercept"
+	"github.com/awvidianto/sentinel-precision/traffic"
+	"github.com/awvidianto/sentinel-precision/traffic/rewrite"
 )
 
 // Task is one engagement: a description + goal + its own exploration store,
@@ -271,7 +271,7 @@ type Manager struct {
 	rewriteMu     sync.Mutex
 	rewriteSet    atomic.Pointer[rewrite.Set]
 	rewriteErrors rewrite.ErrorLog
-	// Capture-proxy constrained Go tampering hooks (P4.2), behind ARTEX_TAMPER_HOOKS_ENABLED.
+	// Capture-proxy constrained Go tampering hooks (P4.2), behind SENTINEL_PRECISION_TAMPER_HOOKS_ENABLED.
 	hookMu       sync.Mutex
 	hookSet      atomic.Pointer[traffic.HookSet]
 	hookLoadErrs map[int64]string
@@ -332,7 +332,7 @@ const (
 	// agent/chat) have context compaction taken over by noa, replacing the built-in compaction. Read once per run; toggling affects only runs started afterwards.
 	settingNoaCompaction = "noa_compaction"
 	// Target noise profile (off|quiet|balanced|aggressive). When stored it wins over
-	// ARTEX_NOISE_PROFILE, which stays the fallback; applied at startup and on PUT.
+	// SENTINEL_PRECISION_NOISE_PROFILE, which stays the fallback; applied at startup and on PUT.
 	settingNoiseProfile = "noise_profile"
 	// settingTriageProfile names an llm_profiles row that serves the decision-model
 	// (/v1/systemone) contract: the triage client for closed-list judgements such as
@@ -502,7 +502,7 @@ func NewManager(dir, proxyAddr string) (*Manager, error) {
 		if tr != nil {
 			m.traffic = tr
 			m.reloadRewriteRules() // in place before the proxy accepts a connection
-			m.reloadTamperHooks()  // opt-in behind ARTEX_TAMPER_HOOKS_ENABLED=1
+			m.reloadTamperHooks()  // opt-in behind SENTINEL_PRECISION_TAMPER_HOOKS_ENABLED=1
 			if scfg, ok := traffic.SOCKS5ConfigFromEnv(); ok {
 				scfg.DialContext = m.interceptor.DialSOCKS5
 				scfg.ResolveUDP4 = m.interceptor.ResolveUDP4

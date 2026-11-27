@@ -20,12 +20,12 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/Autumn-27/artex/agent"
+	"github.com/awvidianto/sentinel-precision/agent"
 )
 
 // isolationProbeArg is the argv marker of the self-test probe:
-// artex __artex-isolation-probe, with an isolationProbeSpec on stdin.
-const isolationProbeArg = "__artex-isolation-probe"
+// sentinelprecision __sentinelprecision-isolation-probe, with an isolationProbeSpec on stdin.
+const isolationProbeArg = "__sentinelprecision-isolation-probe"
 
 // isolationProbeTimeout bounds the probe, database attempt included.
 const isolationProbeTimeout = 30 * time.Second
@@ -335,7 +335,7 @@ func checkIsolationAsExecutor(spec isolationProbeSpec) []string {
 		}
 	}
 	for _, dir := range spec.Unwritable {
-		if f, err := os.CreateTemp(dir, ".artex-isolation-probe-*"); err == nil {
+		if f, err := os.CreateTemp(dir, ".sentinelprecision-isolation-probe-*"); err == nil {
 			name := f.Name()
 			f.Close()
 			os.Remove(name)

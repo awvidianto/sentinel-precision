@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 	// directory of their own, so a session they start never writes the host's
 	// <temp>/norma. It is world-writable and sticky like /tmp: MkdirTemp makes it
 	// 0700, which an executor process could not traverse.
-	tmp, err := os.MkdirTemp("", "artex-test-tmp-")
+	tmp, err := os.MkdirTemp("", "sentinelprecision-test-tmp-")
 	if err != nil {
 		log.Fatalf("test temp directory: %v", err)
 	}

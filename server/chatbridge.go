@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Autumn-27/artex/chatbridge"
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/chatbridge"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // The inbound chat bridge (issue #5): one long-poll loop per registered
@@ -21,7 +21,7 @@ import (
 // or disabling) takes effect without a restart; Reload interrupts a poll that
 // is waiting so the change applies at once instead of after the poll window.
 //
-// Order of work for a batch: commit the cursor, then act. If ARTEX crashes in
+// Order of work for a batch: commit the cursor, then act. If Sentinel Precision crashes in
 // between, the updates of that batch are lost rather than executed twice. For
 // an operator console that is the safe side: a lost "/pause" is retyped, a
 // replayed one acts on a task the operator may have resumed since.

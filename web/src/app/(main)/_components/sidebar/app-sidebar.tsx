@@ -45,7 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <picture className="contents">
                   <source srcSet="/logo.webp" type="image/webp" />
-                  <img src="/logo.png" alt="ARTEX" width={40} height={40} className="shrink-0" />
+                  <img src="/logo.png" alt="Sentinel Precision" width={40} height={40} className="shrink-0" />
                 </picture>
                 <span className="font-semibold text-base">{APP_CONFIG.name}</span>
               </Link>

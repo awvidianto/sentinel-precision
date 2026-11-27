@@ -14,10 +14,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/archivestore"
-	pgdb "github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/traffic"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/archivestore"
+	pgdb "github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/traffic"
 )
 
 const taskArchivePollInterval = 2 * time.Second

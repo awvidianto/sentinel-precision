@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/agent"
-	pgdb "github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/agent"
+	pgdb "github.com/awvidianto/sentinel-precision/db"
 )
 
 // Root tests of the run-directory layout: no agent working directory is an ancestor

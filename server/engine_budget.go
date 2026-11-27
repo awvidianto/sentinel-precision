@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/llmrec"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/llmrec"
 )
 
-// Hierarchical run budgets (agent/budget.go), off unless an ARTEX_*_BUDGET_* env
+// Hierarchical run budgets (agent/budget.go), off unless an SENTINEL_PRECISION_*_BUDGET_* env
 // var is set. Every helper here is a no-op when budgetFor returns nil.
 
 // budgetFor returns the task's budget ledger, created on first use from the env;

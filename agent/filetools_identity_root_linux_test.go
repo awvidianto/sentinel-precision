@@ -36,7 +36,7 @@ func newFileIdentityFixture(t *testing.T) *fileIdentityFixture {
 	}
 	// Not t.TempDir(): the executor has to traverse the directory. TestMain made the
 	// temp directory 1777.
-	base, err := os.MkdirTemp("", "artex-fileid-")
+	base, err := os.MkdirTemp("", "sentinelprecision-fileid-")
 	if err != nil {
 		t.Fatal(err)
 	}

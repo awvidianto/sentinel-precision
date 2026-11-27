@@ -10,7 +10,7 @@ These rules are **not** seeded by the application; nothing changes until you
 apply them. Code the agent writes itself is not gated — only the point where
 untrusted code enters.
 
-Apply (idempotent; restarts the `artex` service so the interceptor reloads its
+Apply (idempotent; restarts the `sentinelprecision` service so the interceptor reloads its
 rule cache):
 
     ./hardening/apply-intercept-rules.sh

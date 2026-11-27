@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/artex/chatbridge"
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/chatbridge"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // HTTP API of the inbound chat bridges. Mounted behind requireAuth like the

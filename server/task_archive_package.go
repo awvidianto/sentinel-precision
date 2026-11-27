@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Autumn-27/artex/agent"
-	pgdb "github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/agent"
+	pgdb "github.com/awvidianto/sentinel-precision/db"
 	"github.com/klauspost/compress/zstd"
 )
 

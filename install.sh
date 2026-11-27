@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ARTEX install script: 1) all-Docker  2) local build & run
+# Sentinel Precision install script: 1) all-Docker  2) local build & run
 set -euo pipefail
 cd "$(cd "$(dirname "$0")" && pwd)"
 
@@ -124,7 +124,7 @@ install_docker(){
   info "building the image from this checkout and starting..."
   docker compose up -d --build
   ok "started → http://localhost:8787"
-  info "view logs: docker compose logs -f artex"
+  info "view logs: docker compose logs -f sentinelprecision"
 }
 
 # ── 2) Local build & run ──────────────────────────────
@@ -136,16 +136,16 @@ install_local(){
     2)
       ensure_docker
       local pw; pw="$(ask 'Postgres password (press Enter for random)' "$(rand)")"
-      docker run -d --name artex-pg -p 5432:5432 \
-        -e POSTGRES_USER=artex -e POSTGRES_PASSWORD="$pw" -e POSTGRES_DB=artex \
-        -v artex-pg:/var/lib/postgresql/data postgres:16-alpine
-      DB_HOST=127.0.0.1 DB_PORT=5432 DB_USER=artex DB_PASS="$pw" DB_NAME=artex DB_SSL=disable ;;
+      docker run -d --name sentinelprecision-pg -p 5432:5432 \
+        -e POSTGRES_USER=sentinelprecision -e POSTGRES_PASSWORD="$pw" -e POSTGRES_DB=sentinelprecision \
+        -v sentinelprecision-pg:/var/lib/postgresql/data postgres:16-alpine
+      DB_HOST=127.0.0.1 DB_PORT=5432 DB_USER=sentinelprecision DB_PASS="$pw" DB_NAME=sentinelprecision DB_SSL=disable ;;
     *)
       DB_HOST="$(ask 'Database host' 127.0.0.1)"
       DB_PORT="$(ask 'Port' 5432)"
-      DB_USER="$(ask 'User' artex)"
+      DB_USER="$(ask 'User' sentinelprecision)"
       DB_PASS="$(ask 'Password' '')"
-      DB_NAME="$(ask 'Database name' artex)"
+      DB_NAME="$(ask 'Database name' sentinelprecision)"
       DB_SSL="$(ask 'sslmode (disable/require)' disable)" ;;
   esac
 
@@ -175,19 +175,19 @@ JSON
     ( cd web && npm ci --ignore-scripts && npm run build:static )
     rm -rf server/webui/dist && mkdir -p server/webui && cp -r web/out server/webui/dist
     info "compiling embedded single binary..."
-    CGO_ENABLED=0 go build -tags embedui -trimpath -o artex ./cmd/artex
+    CGO_ENABLED=0 go build -tags embedui -trimpath -o sentinelprecision ./cmd/sentinelprecision
   else
     warn "npm not detected: building a backend WITHOUT the embedded frontend (run npm run dev separately for the frontend)"
-    CGO_ENABLED=0 go build -o artex ./cmd/artex
+    CGO_ENABLED=0 go build -o sentinelprecision ./cmd/sentinelprecision
   fi
-  ok "build complete → ./artex"
+  ok "build complete → ./sentinelprecision"
 
   info "starting... (Ctrl-C to exit)"
-  ./artex
+  ./sentinelprecision
 }
 
 echo "=============================="
-echo "  ARTEX Install"
+echo "  Sentinel Precision Install"
 echo "  1) All-Docker install"
 echo "  2) Run locally (go build)"
 echo "=============================="

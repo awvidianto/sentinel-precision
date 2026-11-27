@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-const sealHelperEnv = "ARTEX_SEAL_TEST_HELPER"
+const sealHelperEnv = "SENTINEL_PRECISION_SEAL_TEST_HELPER"
 
 // sealHelper is the server's start sequence in miniature: seal, scrub, then report
 // what the kernel environment block and a child process see. It runs in the
@@ -50,20 +50,20 @@ func TestSealedEnvironmentHandoff(t *testing.T) {
 		return
 	}
 	want := map[string]string{
-		"ARTEX_PG_DSN":      "postgres://artex:p@ss@db.internal/artex?sslmode=disable\nsecond line\twith tab",
-		"ARTEX_PG_PASSWORD": "p/ss w@rd?#%",
-		"ARTEX_SECRET_KEY":  "",
-		"ANTHROPIC_API_KEY": "sk-ant-test",
-		"OPENAI_API_KEY":    "=leading-equals",
+		"SENTINEL_PRECISION_PG_DSN":      "postgres://sentinelprecision:p@ss@db.internal/sentinelprecision?sslmode=disable\nsecond line\twith tab",
+		"SENTINEL_PRECISION_PG_PASSWORD": "p/ss w@rd?#%",
+		"SENTINEL_PRECISION_SECRET_KEY":  "",
+		"ANTHROPIC_API_KEY":              "sk-ant-test",
+		"OPENAI_API_KEY":                 "=leading-equals",
 		// The Bedrock gateway reads a bearer token and supports multiline headers.
-		"ARTEX_LLM_API_KEY":        "synthetic-gateway-token",
-		"ARTEX_LLM_CUSTOM_HEADERS": "X-Example-Secret: synthetic-header-value\nX-Example-Route: demo",
+		"SENTINEL_PRECISION_LLM_API_KEY":        "synthetic-gateway-token",
+		"SENTINEL_PRECISION_LLM_CUSTOM_HEADERS": "X-Example-Secret: synthetic-header-value\nX-Example-Route: demo",
 		// Proxy and endpoint URLs can carry credentials in their userinfo.
-		"ARTEX_LLM_PROXY":                    "http://proxyuser:proxypass@proxy.internal:3128",
-		"ARTEX_LLM_BASE_URL":                 "https://apiuser:apipass@llm.internal/v1",
-		"ARTEX_ARCHIVE_S3_ACCESS_KEY_ID":     "AKIATESTONLY",
-		"ARTEX_ARCHIVE_S3_SECRET_ACCESS_KEY": "s3-secret-test",
-		"ARTEX_ARCHIVE_S3_SESSION_TOKEN":     "",
+		"SENTINEL_PRECISION_LLM_PROXY":                    "http://proxyuser:proxypass@proxy.internal:3128",
+		"SENTINEL_PRECISION_LLM_BASE_URL":                 "https://apiuser:apipass@llm.internal/v1",
+		"SENTINEL_PRECISION_ARCHIVE_S3_ACCESS_KEY_ID":     "AKIATESTONLY",
+		"SENTINEL_PRECISION_ARCHIVE_S3_SECRET_ACCESS_KEY": "s3-secret-test",
+		"SENTINEL_PRECISION_ARCHIVE_S3_SESSION_TOKEN":     "",
 		// Ambient AWS credentials the archive store reads when it has no override.
 		"AWS_ACCESS_KEY_ID":                      "AKIAAMBIENTTEST",
 		"AWS_ACCESS_KEY":                         "AKIAALTERNATETEST",

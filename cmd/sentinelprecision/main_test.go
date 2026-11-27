@@ -6,19 +6,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/artex/agent"
+	"github.com/awvidianto/sentinel-precision/agent"
 )
 
 // The snapshot must be serializable and must not add fields. Password masking
 // itself is config.Redact's contract, covered by config/config_test.go;
-// cmd/artex only passes its result through to the log line.
+// cmd/sentinelprecision only passes its result through to the log line.
 func TestConfigSnapshotSerializesRedactedDSN(t *testing.T) {
-	redacted := "postgres://artex:***@localhost:5432/artex?sslmode=disable"
+	redacted := "postgres://sentinelprecision:***@localhost:5432/sentinelprecision?sslmode=disable"
 	s := configSnapshot{
 		Version:         "test",
 		ConfigFileFound: true,
 		PGDSN:           redacted,
-		PGDSNSource:     "environment variable ARTEX_PG_DSN",
+		PGDSNSource:     "environment variable SENTINEL_PRECISION_PG_DSN",
 		TrustedProxies:  []string{},
 	}
 	b, err := json.Marshal(s)

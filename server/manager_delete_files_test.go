@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/artex/agent"
-	pgdb "github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/traffic"
+	"github.com/awvidianto/sentinel-precision/agent"
+	pgdb "github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/traffic"
 )
 
 func TestSeedAssociatesTargetAssetWithTask(t *testing.T) {

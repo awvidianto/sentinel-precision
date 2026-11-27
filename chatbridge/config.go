@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/Autumn-27/artex/notify"
+	"github.com/awvidianto/sentinel-precision/notify"
 )
 
 // The masking convention is the one the notification channels use, so the UI

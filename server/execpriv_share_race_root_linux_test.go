@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/agent"
+	"github.com/awvidianto/sentinel-precision/agent"
 )
 
 // An executor can write in a shared run directory while a restore walks it.
@@ -18,7 +18,7 @@ func TestShareWithExecGroupCannotChmodOutsideAsRoot(t *testing.T) {
 	if os.Geteuid() != 0 {
 		t.Skip("needs root")
 	}
-	base, err := os.MkdirTemp("", "artex-share-race-")
+	base, err := os.MkdirTemp("", "sentinelprecision-share-race-")
 	if err != nil {
 		t.Fatal(err)
 	}

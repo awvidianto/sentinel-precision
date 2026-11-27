@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/traffic"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/traffic"
 )
 
 func TestManagerTransparentTCPOptInFlag(t *testing.T) {
@@ -25,7 +25,7 @@ func TestManagerTransparentTCPOptInFlag(t *testing.T) {
 		t.Fatalf("TransparentTCPAddr with flag off = %q, want empty", got)
 	}
 
-	// 2. Flag on (ARTEX_TRANSPARENT_TCP_ADDR=127.0.0.1:0): starts on Linux,
+	// 2. Flag on (SENTINEL_PRECISION_TRANSPARENT_TCP_ADDR=127.0.0.1:0): starts on Linux,
 	// stays cleanly disabled on non-Linux without crashing NewManager.
 	t.Setenv(traffic.TransparentTCPAddrEnv, "127.0.0.1:0")
 
@@ -38,7 +38,7 @@ func TestManagerTransparentTCPOptInFlag(t *testing.T) {
 	gotAddr := mOn.traffic.TransparentTCPAddr()
 	if runtime.GOOS == "linux" {
 		if gotAddr == "" {
-			t.Fatal("expected transparent TCP listener on Linux when ARTEX_TRANSPARENT_TCP_ADDR is set")
+			t.Fatal("expected transparent TCP listener on Linux when SENTINEL_PRECISION_TRANSPARENT_TCP_ADDR is set")
 		}
 	} else {
 		if gotAddr != "" {

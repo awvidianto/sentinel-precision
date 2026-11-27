@@ -56,10 +56,10 @@ func TestCreateDatabaseSQLQuotesName(t *testing.T) {
 		name string
 		want string
 	}{
-		{"artex", `CREATE DATABASE "artex"`},
-		{"artex-db", `CREATE DATABASE "artex-db"`},
+		{"sentinelprecision", `CREATE DATABASE "sentinelprecision"`},
+		{"sentinelprecision-db", `CREATE DATABASE "sentinelprecision-db"`},
 		{"café", `CREATE DATABASE "café"`},
-		{`artex"`, `CREATE DATABASE "artex"""`},
+		{`sentinelprecision"`, `CREATE DATABASE "sentinelprecision"""`},
 		{`x"; DROP TABLE y; --`, `CREATE DATABASE "x""; DROP TABLE y; --"`},
 	}
 	for _, tt := range tests {

@@ -25,26 +25,26 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/archivestore"
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/egress"
-	"github.com/Autumn-27/artex/intercept"
-	"github.com/Autumn-27/artex/llmpool"
-	"github.com/Autumn-27/artex/llmrec"
-	"github.com/Autumn-27/artex/report"
-	"github.com/Autumn-27/artex/traffic"
 	"github.com/Autumn-27/norma/llm"
 	actool "github.com/Autumn-27/norma/tool"
 	"github.com/Autumn-27/norma/transcript"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/archivestore"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/egress"
+	"github.com/awvidianto/sentinel-precision/intercept"
+	"github.com/awvidianto/sentinel-precision/llmpool"
+	"github.com/awvidianto/sentinel-precision/llmrec"
+	"github.com/awvidianto/sentinel-precision/report"
+	"github.com/awvidianto/sentinel-precision/traffic"
 )
 
-// BuildVersion is the backend application version, injected from cmd/artex at
+// BuildVersion is the backend application version, injected from cmd/sentinelprecision at
 // startup (which in turn gets it from -ldflags "-X main.version=<tag>").
 // Defaults to "dev" for local builds. Exposed to the frontend via GET /api/health.
 var BuildVersion = "dev"
 
-// Server exposes the ARTEX backend over a JSON HTTP API for the shadcn/ui
+// Server exposes the Sentinel Precision backend over a JSON HTTP API for the shadcn/ui
 // frontend.
 type Server struct {
 	m      *Manager
@@ -54,7 +54,7 @@ type Server struct {
 	skillDir string // root directory for skill subdirectories
 	jwtKey   []byte // HS256 signing key loaded from / generated into keyDir/jwt.key
 
-	scrubSecrets bool // drop ARTEX_PG_DSN and the API keys from the environment once read (binary only)
+	scrubSecrets bool // drop SENTINEL_PRECISION_PG_DSN and the API keys from the environment once read (binary only)
 
 	execPriv  ExecPrivilege   // identity agent processes run under; zero keeps the server's own
 	isolation IsolationStatus // result of the startup isolation self-test (isolation.go); zero when not run
@@ -76,7 +76,7 @@ type Server struct {
 
 	// Test-only seams for pgListModels SSRF checks. All remain zero/nil in
 	// production (strict public-only default; only exact host:port entries in
-	// ARTEX_LLM_PRIVATE_ENDPOINTS may resolve to private addresses).
+	// SENTINEL_PRECISION_LLM_PRIVATE_ENDPOINTS may resolve to private addresses).
 	allowLoopbackModels bool
 	modelLookupIP       func(ctx context.Context, host string) ([]netip.Addr, error)
 	modelDialContext    func(ctx context.Context, network, addr string) (net.Conn, error)
@@ -84,7 +84,7 @@ type Server struct {
 
 	loginLimit     *loginLimiter  // per-IP attempt limit on POST /api/auth/login
 	pwdLimit       *loginLimiter  // attempt limit on POST /api/auth/change-password (IP + session token)
-	trustedProxies []netip.Prefix // ARTEX_TRUSTED_PROXIES; see clientIP
+	trustedProxies []netip.Prefix // SENTINEL_PRECISION_TRUSTED_PROXIES; see clientIP
 
 	// concMu serializes concurrency-cap decisions (admission + reconcile) so a
 	// scheduler tick and an HTTP settings change / task creation can't both count
@@ -292,7 +292,7 @@ func New(ctx context.Context, m *Manager, skillDir string, dataDir string, keyDi
 		// Vulnerability IM push delivery engine. Sits beside the Scheduler but independent: push latency demands (3s)
 		// differ from the triggers' business cadence, and neither's failures drag the other down — a stuck push must not affect agent triggers.
 		go newNotifier(s).Run(s.ctx)
-		// Inbound chat bridges: an operator drives ARTEX from a chat app. Off until a bridge is enabled,
+		// Inbound chat bridges: an operator drives Sentinel Precision from a chat app. Off until a bridge is enabled,
 		// and only allowlisted chats are served; long polling only, so no inbound port is opened.
 		s.chatBridges = newChatBridgeRunner(m.pg)
 		go s.chatBridges.Run(s.ctx)
@@ -1059,7 +1059,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("DELETE /api/traffic/rewrite-rules/{id}", s.rewriteDeleteRule)
 	mux.HandleFunc("POST /api/traffic/rewrite-rules/{id}/toggle", s.rewriteToggleRule)
 
-	// capture-proxy constrained Go tampering hooks (P4.2, operator-only, opt-in via ARTEX_TAMPER_HOOKS_ENABLED)
+	// capture-proxy constrained Go tampering hooks (P4.2, operator-only, opt-in via SENTINEL_PRECISION_TAMPER_HOOKS_ENABLED)
 	mux.HandleFunc("GET /api/traffic/hooks", s.tamperListHooks)
 	mux.HandleFunc("POST /api/traffic/hooks", s.tamperCreateHook)
 	mux.HandleFunc("PUT /api/traffic/hooks/{id}", s.tamperUpdateHook)
@@ -1119,12 +1119,12 @@ func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, 200, map[string]any{"ok": true})
 		return
 	}
-	out := map[string]any{"ok": true, "service": "artex", "version": BuildVersion}
+	out := map[string]any{"ok": true, "service": "sentinelprecision", "version": BuildVersion}
 	// The web UI shows a banner on every page for a degraded isolation (isolation.go).
 	if s.isolation.Mode != "" {
 		out["isolation"] = s.isolation
 	}
-	// Opt-in only (ARTEX_UPDATE_CHECK); off, this returns "" without any request.
+	// Opt-in only (SENTINEL_PRECISION_UPDATE_CHECK); off, this returns "" without any request.
 	if latest := updates.newerVersion(r.Context(), time.Now(), BuildVersion); latest != "" {
 		out["latest_version"] = latest
 	}
@@ -2543,7 +2543,7 @@ func (s *Server) findingsExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stage, err := os.MkdirTemp("", "artex-finding-export-")
+	stage, err := os.MkdirTemp("", "sentinelprecision-finding-export-")
 	if err != nil {
 		writeErr(w, 500, err.Error())
 		return
@@ -3979,7 +3979,7 @@ func (s *Server) settingsPayload() map[string]any {
 		// Render limits of IM messages; 0 = no truncation.
 		"notify_summary_max_runes": limits.SummaryRunes,
 		"notify_assets_max_shown":  limits.AssetsShown,
-		// Effective target noise profile (off by default): the stored setting, else ARTEX_NOISE_PROFILE.
+		// Effective target noise profile (off by default): the stored setting, else SENTINEL_PRECISION_NOISE_PROFILE.
 		"noise_profile": egress.CurrentProfile().Name,
 	}
 }

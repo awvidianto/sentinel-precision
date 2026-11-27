@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // A failed coverage-flag read stays enabled: the log says so, the worker keeps

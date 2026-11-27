@@ -1,4 +1,4 @@
--- Inbound chat bridges (issue #5): an operator drives ARTEX from a chat app.
+-- Inbound chat bridges (issue #5): an operator drives Sentinel Precision from a chat app.
 -- One row per transport kind ('telegram' first). Global configuration: not
 -- part of a task archive.
 --

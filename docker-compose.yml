@@ -2,10 +2,10 @@ services:
   postgres:
     image: postgres:16-alpine@sha256:f2f98726820d0342055351c6e9d36e705f5bfffb3dd53ff556325114b08afb6d
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-artex}
+      POSTGRES_USER: ${POSTGRES_USER:-sentinelprecision}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Please set POSTGRES_PASSWORD in .env}
-      POSTGRES_DB: ${POSTGRES_DB:-artex}
-      # Password (SCRAM) for every TCP connection from another container, artex's
+      POSTGRES_DB: ${POSTGRES_DB:-sentinelprecision}
+      # Password (SCRAM) for every TCP connection from another container, sentinelprecision's
       # included; the server's isolation self-test checks that the agent cannot
       # connect without it. Applied when the database is first initialised (a new
       # pgdata volume); the image keeps trust for connections from inside this
@@ -14,21 +14,21 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-artex} -d ${POSTGRES_DB:-artex}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sentinelprecision} -d ${POSTGRES_DB:-sentinelprecision}"]
       interval: 5s
       timeout: 3s
       retries: 10
     restart: unless-stopped
 
-  artex:
+  sentinelprecision:
     # Built from this checkout. The previous reference was a third-party
     # namespace whose repository is gone: whoever controls that name could
     # publish the tag this file would pull.
     build:
       context: .
       args:
-        ARTEX_VERSION: ${ARTEX_VERSION:-dev}
-    image: artex:local
+        SENTINEL_PRECISION_VERSION: ${SENTINEL_PRECISION_VERSION:-dev}
+    image: sentinelprecision:local
     # Agent processes run as an unprivileged executor (-exec-uid): no setuid program
     # or file capability may raise them back to root.
     security_opt:
@@ -38,40 +38,40 @@ services:
         condition: service_healthy
     environment:
       # Parts, not a pasted URL. PostgresDSN percent-encodes the password, so a
-      # value with / ? % @ : or a space still connects. ARTEX_PG_DSN, when set,
+      # value with / ? % @ : or a space still connects. SENTINEL_PRECISION_PG_DSN, when set,
       # would override these and is responsible for its own escaping.
-      ARTEX_PG_HOST: postgres
-      ARTEX_PG_PORT: "5432"
-      ARTEX_PG_USER: ${POSTGRES_USER:-artex}
-      ARTEX_PG_PASSWORD: ${POSTGRES_PASSWORD:?Please set POSTGRES_PASSWORD in .env}
-      ARTEX_PG_DBNAME: ${POSTGRES_DB:-artex}
-      ARTEX_PG_SSLMODE: disable
+      SENTINEL_PRECISION_PG_HOST: postgres
+      SENTINEL_PRECISION_PG_PORT: "5432"
+      SENTINEL_PRECISION_PG_USER: ${POSTGRES_USER:-sentinelprecision}
+      SENTINEL_PRECISION_PG_PASSWORD: ${POSTGRES_PASSWORD:?Please set POSTGRES_PASSWORD in .env}
+      SENTINEL_PRECISION_PG_DBNAME: ${POSTGRES_DB:-sentinelprecision}
+      SENTINEL_PRECISION_PG_SSLMODE: disable
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      ARTEX_LLM_PROVIDER: ${ARTEX_LLM_PROVIDER:-}
-      ARTEX_LLM_MODEL: ${ARTEX_LLM_MODEL:-}
-      ARTEX_LLM_BASE_URL: ${ARTEX_LLM_BASE_URL:-}
-      ARTEX_LLM_PROXY: ${ARTEX_LLM_PROXY:-}
+      SENTINEL_PRECISION_LLM_PROVIDER: ${SENTINEL_PRECISION_LLM_PROVIDER:-}
+      SENTINEL_PRECISION_LLM_MODEL: ${SENTINEL_PRECISION_LLM_MODEL:-}
+      SENTINEL_PRECISION_LLM_BASE_URL: ${SENTINEL_PRECISION_LLM_BASE_URL:-}
+      SENTINEL_PRECISION_LLM_PROXY: ${SENTINEL_PRECISION_LLM_PROXY:-}
       # Exact host:port list the model-list fetch may reach on private addresses (e.g. host.docker.internal:11434 for Ollama).
-      ARTEX_LLM_PRIVATE_ENDPOINTS: ${ARTEX_LLM_PRIVATE_ENDPOINTS:-}
-      ARTEX_JWT_KEY_DIR: /app/keys
+      SENTINEL_PRECISION_LLM_PRIVATE_ENDPOINTS: ${SENTINEL_PRECISION_LLM_PRIVATE_ENDPOINTS:-}
+      SENTINEL_PRECISION_JWT_KEY_DIR: /app/keys
       # Optional: key for secrets at rest; empty = keys/secret.key (generated at first start).
-      ARTEX_SECRET_KEY: ${ARTEX_SECRET_KEY:-}
-      ARTEX_TRUSTED_PROXIES: ${ARTEX_TRUSTED_PROXIES:-}
-      # Untrusted-output boundary: on by default (empty = on); ARTEX_UNTRUSTED_BOUNDARY=0 in .env
+      SENTINEL_PRECISION_SECRET_KEY: ${SENTINEL_PRECISION_SECRET_KEY:-}
+      SENTINEL_PRECISION_TRUSTED_PROXIES: ${SENTINEL_PRECISION_TRUSTED_PROXIES:-}
+      # Untrusted-output boundary: on by default (empty = on); SENTINEL_PRECISION_UNTRUSTED_BOUNDARY=0 in .env
       # disables it. Cost: about 154 bytes per tool result plus one system note.
-      ARTEX_UNTRUSTED_BOUNDARY: ${ARTEX_UNTRUSTED_BOUNDARY:-}
-      ARTEX_UPDATE_CHECK: ${ARTEX_UPDATE_CHECK:-}
+      SENTINEL_PRECISION_UNTRUSTED_BOUNDARY: ${SENTINEL_PRECISION_UNTRUSTED_BOUNDARY:-}
+      SENTINEL_PRECISION_UPDATE_CHECK: ${SENTINEL_PRECISION_UPDATE_CHECK:-}
       # Noise profile for target requests: off (default) | quiet | balanced | aggressive.
-      ARTEX_NOISE_PROFILE: ${ARTEX_NOISE_PROFILE:-}
-      ARTEX_TARGET_USER_AGENT: ${ARTEX_TARGET_USER_AGENT:-}
+      SENTINEL_PRECISION_NOISE_PROFILE: ${SENTINEL_PRECISION_NOISE_PROFILE:-}
+      SENTINEL_PRECISION_TARGET_USER_AGENT: ${SENTINEL_PRECISION_TARGET_USER_AGENT:-}
       # Hierarchical run budgets: unset or 0 = unlimited (no change). See README.
-      ARTEX_TASK_BUDGET_TOKENS: ${ARTEX_TASK_BUDGET_TOKENS:-}
-      ARTEX_TASK_BUDGET_TURNS: ${ARTEX_TASK_BUDGET_TURNS:-}
-      ARTEX_INTENT_BUDGET_TOKENS: ${ARTEX_INTENT_BUDGET_TOKENS:-}
-      ARTEX_INTENT_BUDGET_TURNS: ${ARTEX_INTENT_BUDGET_TURNS:-}
+      SENTINEL_PRECISION_TASK_BUDGET_TOKENS: ${SENTINEL_PRECISION_TASK_BUDGET_TOKENS:-}
+      SENTINEL_PRECISION_TASK_BUDGET_TURNS: ${SENTINEL_PRECISION_TASK_BUDGET_TURNS:-}
+      SENTINEL_PRECISION_INTENT_BUDGET_TOKENS: ${SENTINEL_PRECISION_INTENT_BUDGET_TOKENS:-}
+      SENTINEL_PRECISION_INTENT_BUDGET_TURNS: ${SENTINEL_PRECISION_INTENT_BUDGET_TURNS:-}
     ports:
-      - "${ARTEX_BIND_ADDR:-127.0.0.1}:8787:8787"
+      - "${SENTINEL_PRECISION_BIND_ADDR:-127.0.0.1}:8787:8787"
       - "127.0.0.1:8788:8788"
     volumes:
       # Bind the runtime data directory (traffic index, task files, transcripts, etc.) to data/ in the project root,

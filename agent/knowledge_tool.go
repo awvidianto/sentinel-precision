@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/Autumn-27/artex/knowledge"
 	actool "github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/knowledge"
 )
 
 // knowledgeLookup is a read-only taxonomy lookup shared by the planner and the

@@ -1,5 +1,5 @@
 -- Operator approval before acquiring third-party code.
--- Opt-in: apply with hardening/apply-intercept-rules.sh (restarting the artex
+-- Opt-in: apply with hardening/apply-intercept-rules.sh (restarting the sentinelprecision
 -- service reloads the rule cache). Idempotent: re-running replaces the
 -- [hardening] rules and the skill-visibility rows.
 --
@@ -37,7 +37,7 @@ INSERT INTO intercept_rules(name, enabled, priority, match_target, match_type, p
  'ask', 'Executing remote or decoded content directly in an interpreter requires approval. Download to a file, review it (skill third-party-code-review), and request approval.', true, 1800, 'deny'),
 
 ('[hardening] Access to server keys or DSN', true, 72, 'tool_input', 'regex',
- $re$(?i)"(?:command|text|paste)"\s*:\s*"(?:[^"\\]|\\.)*?(?:/app/keys/|/proc/(?:[0-9]+|self|thread-self)/environ|\bARTEX_PG_DSN\b|\bARTEX_SECRET_KEY\b)$re$,
+ $re$(?i)"(?:command|text|paste)"\s*:\s*"(?:[^"\\]|\\.)*?(?:/app/keys/|/proc/(?:[0-9]+|self|thread-self)/environ|\bSENTINEL_PRECISION_PG_DSN\b|\bSENTINEL_PRECISION_SECRET_KEY\b)$re$,
  'deny', 'Reading the server signing/secret keys or the database DSN from the agent shell is forbidden. This is enforced; the skill prose is not.', false, 0, 'deny');
 
 -- Make the review skill visible to the executor agents. Only enabled=true rows

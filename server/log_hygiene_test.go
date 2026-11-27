@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // lockedBuffer is a bytes.Buffer that goroutines still logging in the
@@ -260,13 +260,13 @@ func TestProxyWithoutCredentials(t *testing.T) {
 
 func TestMaskURLCredentials(t *testing.T) {
 	for in, want := range map[string]string{
-		"plain line, no URL":                                  "plain line, no URL",
-		"proxy http://user:pass@proxy.test:3128 attached":     "proxy http://user:xxxxx@proxy.test:3128 attached",
-		`global proxy "socks5://u:p@h:1080" invalid`:          `global proxy "socks5://u:xxxxx@h:1080" invalid`,
-		"dsn postgres://artex:pw@/db?host=/tmp/sock":          "dsn postgres://artex:xxxxx@/db?host=/tmp/sock",
-		"a password with @ and : http://user:p@ss:w0rd@h:1/x": "a password with @ and : http://user:xxxxx@h:1/x",
-		"two http://a:b@h1 and https://c:d@h2/p":              "two http://a:xxxxx@h1 and https://c:xxxxx@h2/p",
-		"an empty user http://:secret@h:1":                    "an empty user http://:xxxxx@h:1",
+		"plain line, no URL":                                     "plain line, no URL",
+		"proxy http://user:pass@proxy.test:3128 attached":        "proxy http://user:xxxxx@proxy.test:3128 attached",
+		`global proxy "socks5://u:p@h:1080" invalid`:             `global proxy "socks5://u:xxxxx@h:1080" invalid`,
+		"dsn postgres://sentinelprecision:pw@/db?host=/tmp/sock": "dsn postgres://sentinelprecision:xxxxx@/db?host=/tmp/sock",
+		"a password with @ and : http://user:p@ss:w0rd@h:1/x":    "a password with @ and : http://user:xxxxx@h:1/x",
+		"two http://a:b@h1 and https://c:d@h2/p":                 "two http://a:xxxxx@h1 and https://c:xxxxx@h2/p",
+		"an empty user http://:secret@h:1":                       "an empty user http://:xxxxx@h:1",
 		// No password: nothing to mask, and nothing mistaken for one.
 		"user only ssh://git@github.com/org/repo":               "user only ssh://git@github.com/org/repo",
 		"host and port http://127.0.0.1:8787/api?mail=a@b.test": "host and port http://127.0.0.1:8787/api?mail=a@b.test",

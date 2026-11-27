@@ -20,7 +20,7 @@ function load({ saved = null, languages = ["en-US"], language = "en-US", blocked
     context.window = {
       localStorage: {
         getItem(key) {
-          assert.equal(key, "artex.locale");
+          assert.equal(key, "sentinelprecision.locale");
           if (blocked) throw new Error("Storage blocked");
           return saved;
         },
@@ -85,7 +85,7 @@ test("switching persists the existing storage key and reloads once", () => {
   state.api.setLocale("en");
   assert.equal(state.reloads(), 0);
   state.api.setLocale("zh-CN");
-  assert.deepEqual(state.writes, [["artex.locale", "zh-CN"]]);
+  assert.deepEqual(state.writes, [["sentinelprecision.locale", "zh-CN"]]);
   assert.equal(state.reloads(), 1);
   const blocked = load({ blocked: true });
   assert.doesNotThrow(() => blocked.api.setLocale("zh-CN"));

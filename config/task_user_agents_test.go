@@ -10,7 +10,7 @@ import (
 
 func TestLoadTaskUserAgents(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.json")
-	t.Setenv("ARTEX_CONFIG", path)
+	t.Setenv("SENTINEL_PRECISION_CONFIG", path)
 	cfg, err := Load()
 	if err != nil || len(cfg.TaskUserAgents) != 0 {
 		t.Fatalf("missing file: config = %+v, error = %v", cfg, err)
@@ -31,10 +31,10 @@ func TestLoadTaskUserAgents(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, tc := range []struct{ taskID, want string }{
-		{"42", "ARTEX-Assessment/1.0 (engagement=FS-17)"},
-		{"43", "ARTEX-Assessment/1.0"},
-		{"44", "ARTEX-Assessment/1.0 (engagement=" + maxReference + ")"},
-		{"45", "ARTEX-Assessment/1.0"},
+		{"42", "SentinelPrecision-Assessment/1.0 (engagement=FS-17)"},
+		{"43", "SentinelPrecision-Assessment/1.0"},
+		{"44", "SentinelPrecision-Assessment/1.0 (engagement=" + maxReference + ")"},
+		{"45", "SentinelPrecision-Assessment/1.0"},
 		{"46", ""},
 		{"", ""},
 	} {
@@ -97,7 +97,7 @@ func TestLoadRejectsInvalidTaskUserAgents(t *testing.T) {
 			if err := os.WriteFile(path, []byte(`{"task_user_agents":`+tc.entries+`}`), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			t.Setenv("ARTEX_CONFIG", path)
+			t.Setenv("SENTINEL_PRECISION_CONFIG", path)
 			if _, err := Load(); err == nil || !strings.Contains(err.Error(), "task_user_agents") {
 				t.Fatalf("Load() error = %v, want task_user_agents validation error", err)
 			}
@@ -115,7 +115,7 @@ func TestLoadRejectsOldTaskUserAgentsKey(t *testing.T) {
 		if err := os.WriteFile(path, []byte(body), 0o600); err != nil {
 			t.Fatal(err)
 		}
-		t.Setenv("ARTEX_CONFIG", path)
+		t.Setenv("SENTINEL_PRECISION_CONFIG", path)
 		if _, err := Load(); err == nil || !strings.Contains(err.Error(), "assessment_identification was replaced by task_user_agents") {
 			t.Fatalf("Load() error = %v, want task_user_agents migration hint", err)
 		}

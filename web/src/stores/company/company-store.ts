@@ -20,7 +20,7 @@ export const useCompanyStore = create<CompanyState>()(
       companyName: "",
       setCompany: (id, name = "") => set({ companyId: id, companyName: id === null ? "" : name }),
     }),
-    { name: "artex-active-company" },
+    { name: "sentinelprecision-active-company" },
   ),
 );
 

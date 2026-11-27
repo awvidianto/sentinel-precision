@@ -9,8 +9,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
 	"github.com/Autumn-27/norma/llm"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 func sampleCompactionInputs() (*coldGraph, block, map[int64]*db.Node) {

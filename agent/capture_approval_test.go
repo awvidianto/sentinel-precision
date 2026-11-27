@@ -5,26 +5,26 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/guard"
-	"github.com/Autumn-27/artex/intercept"
 	"github.com/Autumn-27/norma/agentcore"
 	"github.com/Autumn-27/norma/llm"
 	"github.com/Autumn-27/norma/permission"
 	"github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/guard"
+	"github.com/awvidianto/sentinel-precision/intercept"
 )
 
 // Exercise the actual SDK event -> hook -> execution -> result path. No real
 // model or command is used; the probe tool only returns a fixed string.
 func TestCaptureApprovalLifecycle(t *testing.T) {
-	// Known failure with a freshly seeded database (BaaRai/ARTEX#9). Repro:
-	//   ARTEX_PG_DSN=postgres://artex:testpass@localhost:5432/artextest_agent \
+	// Known failure with a freshly seeded database (awvidianto/sentinel-precision#9). Repro:
+	//   SENTINEL_PRECISION_PG_DSN=postgres://sentinelprecision:testpass@localhost:5432/sentinelprecisiontest_agent \
 	//     go test ./agent -run TestCaptureApprovalLifecycle -count=1 -v
 	// The checks after ListTaskIntercepts / GetInterceptDetail and the
 	// "unexpected review" t.Fatalf below fail before any other test has seeded
 	// intercept state. Keep this skipped until the fresh-DB setup is fixed;
 	// do not simply delete the skip.
-	t.Skip("known failure with a fresh database; repro and failing assertion documented above; BaaRai/ARTEX#9")
+	t.Skip("known failure with a fresh database; repro and failing assertion documented above; awvidianto/sentinel-precision#9")
 	dsn, _, err := db.DSN()
 	if err != nil {
 		db.SkipPGUnavailable(t, err)

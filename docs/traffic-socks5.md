@@ -1,26 +1,26 @@
 # Opt-in SOCKS5 Inbound Proxy & Raw TCP Recording (P4.1a)
 
-ARTEX ships an opt-in **RFC 1928 SOCKS5 `CONNECT`** inbound listener in `traffic/` that records raw TCP connections separately from HTTP traffic.
+Sentinel Precision ships an opt-in **RFC 1928 SOCKS5 `CONNECT`** inbound listener in `traffic/` that records raw TCP connections separately from HTTP traffic.
 
 ## Opt-in Configuration (Off by Default)
 
 | Environment Variable | Default | Behavior |
 |---|---|---|
-| `ARTEX_SOCKS5_ENABLED` | unset (off) | Set to `1` / `true` / `on` / `yes` to start the SOCKS5 listener on `127.0.0.1:1080` (loopback). Explicit `0` / `false` / `off` / `no` forces it off even if `ARTEX_SOCKS5_ADDR` is set. |
-| `ARTEX_SOCKS5_ADDR` | `127.0.0.1:1080` | Explicit TCP bind address; setting a non-empty value also enables the listener unless `ARTEX_SOCKS5_ENABLED` is explicitly false. |
+| `SENTINEL_PRECISION_SOCKS5_ENABLED` | unset (off) | Set to `1` / `true` / `on` / `yes` to start the SOCKS5 listener on `127.0.0.1:1080` (loopback). Explicit `0` / `false` / `off` / `no` forces it off even if `SENTINEL_PRECISION_SOCKS5_ADDR` is set. |
+| `SENTINEL_PRECISION_SOCKS5_ADDR` | `127.0.0.1:1080` | Explicit TCP bind address; setting a non-empty value also enables the listener unless `SENTINEL_PRECISION_SOCKS5_ENABLED` is explicitly false. |
 
 - **Flag off**: no SOCKS5 listener is started and the HTTP MITM recording proxy is byte-identical.
-- **Requires traffic recorder**: the server only starts the SOCKS5 listener when the traffic recorder is enabled (inside the traffic proxy block in `server/manager.go`). If traffic capture is disabled, setting `ARTEX_SOCKS5_ENABLED` / `ARTEX_SOCKS5_ADDR` does not open a listener.
-- **Agents unchanged**: workers and tools keep `HTTP_PROXY`, `HTTPS_PROXY`, and `ALL_PROXY` pointing to the existing HTTP proxy; ARTEX does not silently switch agents to SOCKS5.
-- **Loopback clients only**: RFC 1929 username/password (`0x02`) does not verify credentials (the username only carries the pace marker `artex-pace`), so it is offered on the same terms as no-auth (`0x00`): to loopback clients only. A client connecting from any other address is refused with `0xFF` (*no acceptable methods*) whichever method it offers, so binding `ARTEX_SOCKS5_ADDR` to a non-loopback address does not expose an open proxy; it simply accepts no remote clients. The target gate and egress governor still apply to every accepted connection.
+- **Requires traffic recorder**: the server only starts the SOCKS5 listener when the traffic recorder is enabled (inside the traffic proxy block in `server/manager.go`). If traffic capture is disabled, setting `SENTINEL_PRECISION_SOCKS5_ENABLED` / `SENTINEL_PRECISION_SOCKS5_ADDR` does not open a listener.
+- **Agents unchanged**: workers and tools keep `HTTP_PROXY`, `HTTPS_PROXY`, and `ALL_PROXY` pointing to the existing HTTP proxy; Sentinel Precision does not silently switch agents to SOCKS5.
+- **Loopback clients only**: RFC 1929 username/password (`0x02`) does not verify credentials (the username only carries the pace marker `sentinelprecision-pace`), so it is offered on the same terms as no-auth (`0x00`): to loopback clients only. A client connecting from any other address is refused with `0xFF` (*no acceptable methods*) whichever method it offers, so binding `SENTINEL_PRECISION_SOCKS5_ADDR` to a non-loopback address does not expose an open proxy; it simply accepts no remote clients. The target gate and egress governor still apply to every accepted connection.
 
 ## Protocol Scope (P4.1a)
 
-- **Commands**: `CONNECT` (`0x01`) by default. `BIND` (`0x02`) and unknown commands return RFC 1928 reply `0x07` (*Command not supported*). `UDP ASSOCIATE` (`0x03`) also returns `0x07` unless `ARTEX_SOCKS5_UDP_ENABLED=1` is set (see [docs/traffic-socks5-udp.md](traffic-socks5-udp.md)).
+- **Commands**: `CONNECT` (`0x01`) by default. `BIND` (`0x02`) and unknown commands return RFC 1928 reply `0x07` (*Command not supported*). `UDP ASSOCIATE` (`0x03`) also returns `0x07` unless `SENTINEL_PRECISION_SOCKS5_UDP_ENABLED=1` is set (see [docs/traffic-socks5-udp.md](traffic-socks5-udp.md)).
 - **Addressing**: IPv4 (`0x01`), domain name (`0x03`), and IPv6 (`0x04`). Unknown address types return `0x08` (*Address type not supported*).
 - **Authentication**:
   - Loopback peers (`net.IP.IsLoopback()`) may connect with **No Auth** (`0x00`). Non-loopback peers offering only `0x00` are rejected with `0x05 0xFF`.
-  - **Username/Password** (`0x02`, RFC 1929) is accepted without requiring credentials so clients can pass the pace marker (`artex-pace`, `egress.PaceUser`) in the username.
+  - **Username/Password** (`0x02`, RFC 1929) is accepted without requiring credentials so clients can pass the pace marker (`sentinelprecision-pace`, `egress.PaceUser`) in the username.
 - **Relay**: Full-duplex, half-close aware (`CloseWrite` on EOF in each direction).
 
 ## Policy Enforcement Before Dialing

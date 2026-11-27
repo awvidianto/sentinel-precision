@@ -1,6 +1,6 @@
 # egress-guard
 
-DNS-driven egress allowlist for the ARTEX container. It blocks data from leaving
+DNS-driven egress allowlist for the Sentinel Precision container. It blocks data from leaving
 to arbitrary hosts (e.g. a malicious PoC sending the keys to an attacker) without
 breaking asset discovery: any subdomain of an in-scope domain is allowed
 automatically the moment it resolves.
@@ -9,14 +9,14 @@ Opt-in and Linux-only. It is a separate compose file and needs `NET_ADMIN`; it
 edits the host firewall, so read this before enabling it.
 
 ## How it works
-1. ARTEX uses `172.31.250.1` (this service's dnsmasq) as its DNS. DNS queries to
+1. Sentinel Precision uses `172.31.250.1` (this service's dnsmasq) as its DNS. DNS queries to
    any other server (dnsx, bbot, `dig @8.8.8.8`) are redirected here.
 2. Names matching a suffix in `lists/base-domains.txt` or `lists/scope-domains.txt`
-   have their resolved IPs added to the `artex_allow` ipset (they expire 6 h after
+   have their resolved IPs added to the `sentinelprecision_allow` ipset (they expire 6 h after
    the last query).
-3. In the `DOCKER-USER` chain, new outbound connections from the ARTEX network are
-   allowed only if the destination is in `artex_allow` or in `lists/scope-cidrs.txt`.
-   Everything else is logged (`ARTEX-EGRESS-*` in the kernel log) and, in
+3. In the `DOCKER-USER` chain, new outbound connections from the Sentinel Precision network are
+   allowed only if the destination is in `sentinelprecision_allow` or in `lists/scope-cidrs.txt`.
+   Everything else is logged (`SENTINEL-EGRESS-*` in the kernel log) and, in
    `enforce`, rejected.
 
 ## Modes (`EGRESS_MODE` in `.env`)
@@ -30,7 +30,7 @@ edits the host firewall, so read this before enabling it.
 dry run for calibration — it protects nothing. Set `EGRESS_MODE=enforce` (and
 bring the service up again) for the guard to have any effect. In `enforce`,
 setup is **fail-closed**: a blanket deny is installed before the allowlist is
-built, so if setup fails the ARTEX container loses outbound connectivity (except
+built, so if setup fails the Sentinel Precision container loses outbound connectivity (except
 DNS) until the guard restarts cleanly.
 
 ## Operation
@@ -44,9 +44,9 @@ DNS) until the guard restarts cleanly.
 
 ## Known gaps
 - **IPv6 is not filtered.** The allowlist is IPv4-only (ipset `hash:ip`/`hash:net`).
-  Keep the ARTEX network IPv4-only (do not set `enable_ipv6` on it) — then the
+  Keep the Sentinel Precision network IPv4-only (do not set `enable_ipv6` on it) — then the
   container has no IPv6 address and the gap is latent. If you do enable IPv6, set
-  `ARTEX_SUBNET6` so `enforce` installs an `ip6tables` deny for it; the guard logs
+  `SENTINEL_PRECISION_SUBNET6` so `enforce` installs an `ip6tables` deny for it; the guard logs
   a warning when IPv6 is left unfiltered.
 - **Traffic to the host/gateway bypasses the filter.** Container→gateway traffic
   goes through the host `INPUT` chain, not `DOCKER-USER` (`FORWARD`), so a proxy

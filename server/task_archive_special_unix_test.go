@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"testing"
 
-	pgdb "github.com/Autumn-27/artex/db"
+	pgdb "github.com/awvidianto/sentinel-precision/db"
 )
 
 // A named pipe or a socket left in the task workspace by a command must not

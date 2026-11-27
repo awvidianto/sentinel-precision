@@ -25,7 +25,7 @@ export const LOCALES: { code: Locale; label: string }[] = [
   { code: "zh-CN", label: "简体中文" },
 ];
 
-const STORAGE_KEY = "artex.locale";
+const STORAGE_KEY = "sentinelprecision.locale";
 
 const DICTIONARIES: Record<Locale, Record<string, string>> = {
   tr: tr as Record<string, string>,

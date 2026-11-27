@@ -10,8 +10,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
 	"github.com/Autumn-27/norma/llm"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // scriptedDecomposerProvider replays a sequence of scripted stream turns and

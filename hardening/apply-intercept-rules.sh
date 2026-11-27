@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Applies the [hardening] intercept rules and skill visibility (idempotent),
-# then restarts the artex service so the interceptor reloads its rule cache.
+# then restarts the sentinelprecision service so the interceptor reloads its rule cache.
 #
 # This script does NOT source .env. Sourcing it (`set -a; . ./.env`) runs any
 # value containing $(...) as a command and expands $VARs, which can execute code
@@ -15,7 +15,7 @@ docker compose exec -T postgres sh -c \
   'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
   < hardening/intercept-rules.sql
 
-docker compose restart artex
+docker compose restart sentinelprecision
 
 docker compose exec -T postgres sh -c 'exec psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' <<'SQL'
 SELECT id, name, action, priority, timeout_seconds, timeout_action

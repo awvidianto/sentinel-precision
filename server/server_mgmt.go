@@ -29,12 +29,12 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/intercept"
-	"github.com/Autumn-27/artex/notify"
 	"github.com/Autumn-27/norma/llm"
 	"github.com/Autumn-27/norma/skill"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/intercept"
+	"github.com/awvidianto/sentinel-precision/notify"
 )
 
 // validSkillName checks the agentskills.io name constraints, widened so a skill can
@@ -2419,7 +2419,7 @@ const maxModelRedirects = 5
 // host:port entries (for example "127.0.0.1:11434,host.docker.internal:11434")
 // that POST /api/llm/models may contact on loopback or private addresses.
 // Unset or empty enforces the strict public-only policy.
-const LLMPrivateEndpointsEnv = "ARTEX_LLM_PRIVATE_ENDPOINTS"
+const LLMPrivateEndpointsEnv = "SENTINEL_PRECISION_LLM_PRIVATE_ENDPOINTS"
 
 type modelURLRefusalError struct {
 	msg string
@@ -2622,7 +2622,7 @@ func (g *modelURLGuard) blockDial(_, address string, _ syscall.RawConn) error {
 // validateURL validates a base_url candidate, proxy URL, or redirect target for
 // POST /api/llm/models. Only http and https URLs are permitted; hosts must
 // resolve strictly to public addresses unless their exact host:port is listed
-// in ARTEX_LLM_PRIVATE_ENDPOINTS. Errors never include resolved IP addresses.
+// in SENTINEL_PRECISION_LLM_PRIVATE_ENDPOINTS. Errors never include resolved IP addresses.
 func (g *modelURLGuard) validateURL(ctx context.Context, rawURL, role string) (*url.URL, error) {
 	u, err := url.Parse(strings.TrimSpace(rawURL))
 	if err != nil {

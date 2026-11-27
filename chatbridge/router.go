@@ -148,7 +148,7 @@ func (r *Router) refuse(chatID string) (Decision, string) {
 		clear(r.refused)
 	}
 	r.refused[chatID] = true
-	return DecisionRefused, "This chat is not allowed to use this ARTEX bot. If it is yours, add chat ID " + chatID + " to the allowlist in ARTEX (System → Chat bot)."
+	return DecisionRefused, "This chat is not allowed to use this Sentinel Precision bot. If it is yours, add chat ID " + chatID + " to the allowlist in Sentinel Precision (System → Chat bot)."
 }
 
 // KeepRefusals carries the refusal memory of a previous router over, so
@@ -170,7 +170,7 @@ func (r *Router) KeepRefusals(prev *Router) {
 
 func (r *Router) help() string {
 	var b strings.Builder
-	b.WriteString("ARTEX bot commands:\n/help - this list")
+	b.WriteString("Sentinel Precision bot commands:\n/help - this list")
 	cmds := append([]Command(nil), r.Commands...)
 	sort.Slice(cmds, func(i, j int) bool { return cmds[i].Name < cmds[j].Name })
 	for _, c := range cmds {

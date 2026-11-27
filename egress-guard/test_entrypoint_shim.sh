@@ -70,18 +70,18 @@ sed -e "s|LISTS=/etc/egress-guard|LISTS=$TMP/lists|" \
     "$DIR/entrypoint.sh" > "$TMP/entrypoint_test.sh"
 chmod +x "$TMP/entrypoint_test.sh"
 
-# Test 1: enforce with ARTEX_SUBNET6 keeps an active IPv6 DROP rule after remove_bootstrap_deny
+# Test 1: enforce with SENTINEL_PRECISION_SUBNET6 keeps an active IPv6 DROP rule after remove_bootstrap_deny
 : > "$IP6_STATE"
 rm -f "$TMP/started"
 set +e
 PATH="$TMP/bin:$PATH" IPTABLES_BIN="$TMP/bin/iptables" IP6TABLES_BIN="$TMP/bin/ip6tables" \
   DNSMASQ_STARTED_FILE="$TMP/started" \
-  EGRESS_MODE=enforce ARTEX_SUBNET=172.31.250.0/24 ARTEX_GATEWAY=172.31.250.1 \
-  ARTEX_SUBNET6=fd00:artex::/64 \
+  EGRESS_MODE=enforce SENTINEL_PRECISION_SUBNET=172.31.250.0/24 SENTINEL_PRECISION_GATEWAY=172.31.250.1 \
+  SENTINEL_PRECISION_SUBNET6=fd00:sentinelprecision::/64 \
   bash "$TMP/entrypoint_test.sh" >/tmp/eg418_t1.log 2>&1
 set -e
 test -f "$TMP/started" || { echo "FAIL: dnsmasq did not start"; cat /tmp/eg418_t1.log; exit 1; }
-if ! grep -q -- "-s fd00:artex::/64 .* -j DROP" "$IP6_STATE"; then
+if ! grep -q -- "-s fd00:sentinelprecision::/64 .* -j DROP" "$IP6_STATE"; then
   echo "FAIL: IPv6 DROP rule was deleted by remove_bootstrap_deny! Active ip6tables rules:"
   cat "$IP6_STATE"
   exit 1
@@ -93,8 +93,8 @@ echo "PASS: IPv6 DROP rule persists after remove_bootstrap_deny"
 set +e
 PATH="$TMP/bin:$PATH" IPTABLES_BIN="$TMP/bin/iptables" IP6TABLES_BIN="$TMP/bin/ip6tables" \
   FAIL_DNSMASQ_TEST=1 DNSMASQ_STARTED_FILE="$TMP/started2" \
-  EGRESS_MODE=enforce ARTEX_SUBNET=172.31.250.0/24 ARTEX_GATEWAY=172.31.250.1 \
-  ARTEX_SUBNET6=fd00:artex::/64 \
+  EGRESS_MODE=enforce SENTINEL_PRECISION_SUBNET=172.31.250.0/24 SENTINEL_PRECISION_GATEWAY=172.31.250.1 \
+  SENTINEL_PRECISION_SUBNET6=fd00:sentinelprecision::/64 \
   bash "$TMP/entrypoint_test.sh" >/tmp/eg418_t2.log 2>&1
 rc=$?
 set -e
@@ -102,7 +102,7 @@ if [ "$rc" -eq 0 ]; then
   echo "FAIL: entrypoint exited 0 when dnsmasq --test failed"
   exit 1
 fi
-if ! grep -q "artex-egress-bootstrap-deny" "$IP6_STATE"; then
+if ! grep -q "sentinelprecision-egress-bootstrap-deny" "$IP6_STATE"; then
   echo "FAIL: bootstrap-deny was already removed before dnsmasq --test failed"
   exit 1
 fi

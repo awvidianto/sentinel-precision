@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/traffic"
-	"github.com/Autumn-27/artex/traffic/rewrite"
+	"github.com/awvidianto/sentinel-precision/traffic"
+	"github.com/awvidianto/sentinel-precision/traffic/rewrite"
 )
 
 // replayServer wires a Server like ingestServer. With traffic off,

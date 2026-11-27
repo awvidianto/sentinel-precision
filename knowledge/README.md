@@ -1,6 +1,6 @@
 # Knowledge pack
 
-Small, versioned security taxonomy pack embedded in the ARTEX binary. It gives
+Small, versioned security taxonomy pack embedded in the Sentinel Precision binary. It gives
 the planner and the workers stable identifiers to plan against and to cite in
 findings and facts:
 
