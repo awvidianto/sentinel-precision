@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
 	"github.com/Autumn-27/norma/llm"
 	"github.com/Autumn-27/norma/transcript"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 type syntheticTelemetryProvider struct {
@@ -199,9 +199,9 @@ func TestMeasureContextExactSizesAndBoundaryModes(t *testing.T) {
 }
 
 func TestContextTelemetryFlagOffAndOnPostgres(t *testing.T) {
-	dsn := os.Getenv("ARTEX_PG_DSN")
+	dsn := os.Getenv("SENTINEL_PRECISION_PG_DSN")
 	if dsn == "" {
-		t.Skip("ARTEX_PG_DSN not set")
+		t.Skip("SENTINEL_PRECISION_PG_DSN not set")
 	}
 	pg, err := db.Open(dsn)
 	if err != nil {
@@ -240,14 +240,14 @@ func TestContextTelemetryFlagOffAndOnPostgres(t *testing.T) {
 	}
 	t.Setenv(ContextTelemetryEnv, "off")
 	if ContextTelemetryEnabled() {
-		t.Fatal("expected telemetry disabled when ARTEX_CONTEXT_TELEMETRY=off")
+		t.Fatal("expected telemetry disabled when SENTINEL_PRECISION_CONTEXT_TELEMETRY=off")
 	}
 
 	// 1. Flag OFF explicitly: zero rows in llm_context on both Stream and Complete,
 	// identical behavior regardless of recordBodies.
 	t.Setenv(ContextTelemetryEnv, "0")
 	if ContextTelemetryEnabled() {
-		t.Fatal("expected telemetry disabled when ARTEX_CONTEXT_TELEMETRY=0")
+		t.Fatal("expected telemetry disabled when SENTINEL_PRECISION_CONTEXT_TELEMETRY=0")
 	}
 	recOff := Wrap(syntheticTelemetryProvider{usage: wantUsage}, pg, "claude-test", "prof-a", "", "", func() bool { return false })
 	ctxOff := transcript.WithSessionID(WithTaskID(context.Background(), taskOff), "exp1-worker-i1")
@@ -279,7 +279,7 @@ func TestContextTelemetryFlagOffAndOnPostgres(t *testing.T) {
 	// and Complete, with exact byte sizes and zero llm_records rows.
 	t.Setenv(ContextTelemetryEnv, "1")
 	if !ContextTelemetryEnabled() {
-		t.Fatal("expected telemetry enabled when ARTEX_CONTEXT_TELEMETRY=1")
+		t.Fatal("expected telemetry enabled when SENTINEL_PRECISION_CONTEXT_TELEMETRY=1")
 	}
 	recOn := Wrap(syntheticTelemetryProvider{usage: wantUsage}, pg, "claude-test", "prof-a", "", "", func() bool { return false })
 	ctxOn := transcript.WithSessionID(WithTaskID(context.Background(), taskOn), "exp2-planner")

@@ -32,13 +32,13 @@ Thumbs.db
 .claude/
 
 # single-binary artifact with embedded frontend
-/artex
+/sentinelprecision
 # intermediate artifacts left next to the executable by one-click update (staging file / backup / failed version / upgrade marker)
-/artex.new
-/artex.new.sha256
-/artex.old
-/artex.failed
-/artex.upgrade.json
+/sentinelprecision.new
+/sentinelprecision.new.sha256
+/sentinelprecision.old
+/sentinelprecision.failed
+/sentinelprecision.upgrade.json
 /server/webui/dist/
 /dist/
 

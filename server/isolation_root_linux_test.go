@@ -45,17 +45,17 @@ func newIsolationRootFixture(t *testing.T) *isolationRootFixture {
 }
 
 func (f *isolationRootFixture) targets() IsolationTargets {
-	return IsolationTargets{DataDir: f.data, KeyDir: f.keyDir, ConfigPath: f.config, DSN: os.Getenv("ARTEX_PG_DSN")}
+	return IsolationTargets{DataDir: f.data, KeyDir: f.keyDir, ConfigPath: f.config, DSN: os.Getenv("SENTINEL_PRECISION_PG_DSN")}
 }
 
 // The deployment the self-test is for: root server, executor drop, shim, root-only
-// keys and config. It passes, through the real Bash shim, and with ARTEX_PG_DSN set
+// keys and config. It passes, through the real Bash shim, and with SENTINEL_PRECISION_PG_DSN set
 // it also finds that the executor cannot open a session on that database without
 // the password (PostgreSQL asks for one on TCP).
 func TestIsolationSelfTestPassesAsRoot(t *testing.T) {
 	f := newIsolationRootFixture(t)
-	if os.Getenv("ARTEX_PG_DSN") == "" {
-		t.Log("ARTEX_PG_DSN unset: the database check is not exercised")
+	if os.Getenv("SENTINEL_PRECISION_PG_DSN") == "" {
+		t.Log("SENTINEL_PRECISION_PG_DSN unset: the database check is not exercised")
 	}
 	if err := IsolationSelfTest(f.priv, f.targets()); err != nil {
 		t.Fatalf("self-test on an isolated setup: %v", err)
@@ -232,9 +232,9 @@ func TestIsolationSelfTestDetectsPasswordlessDatabaseAsRoot(t *testing.T) {
 	f := newIsolationRootFixture(t)
 	host, port := fakeTrustPG(t)
 	tg := f.targets()
-	tg.DSN = "postgres://artex:server-password@" + host + ":" + strconv.Itoa(int(port)) + "/artex"
+	tg.DSN = "postgres://sentinelprecision:server-password@" + host + ":" + strconv.Itoa(int(port)) + "/sentinelprecision"
 	err := IsolationSelfTest(f.priv, tg)
-	if err == nil || !strings.Contains(err.Error(), `database session as "artex"`) {
+	if err == nil || !strings.Contains(err.Error(), `database session as "sentinelprecision"`) {
 		t.Fatalf("self-test against a passwordless database: %v", err)
 	}
 }

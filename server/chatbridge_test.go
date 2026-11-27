@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/chatbridge"
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/chatbridge"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // fakeBridgeTransport is an in-memory chat app. The runner tests use their

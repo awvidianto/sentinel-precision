@@ -87,20 +87,20 @@ func TestCheckIsolationReportsEachExposure(t *testing.T) {
 	if err := os.WriteFile(secret, []byte("k"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("ARTEX_ISOLATION_CANARY", "canary")
+	t.Setenv("SENTINEL_PRECISION_ISOLATION_CANARY", "canary")
 	host, port := fakeTrustPG(t)
 	failures := checkIsolationAsExecutor(isolationProbeSpec{
 		UID: 10001, GID: 10001, ServerPID: os.Getpid(),
 		Unreadable: []string{secret, filepath.Join(dir, "absent.key")},
 		Unwritable: []string{dir},
-		DB:         []isolationProbeDB{{Host: host, Port: port, User: "artex", Database: "artex"}},
+		DB:         []isolationProbeDB{{Host: host, Port: port, User: "sentinelprecision", Database: "sentinelprecision"}},
 	})
 	for _, want := range []string{
 		"not the executor uid 10001",
 		"Bash can read " + secret,
 		"Bash can create files in " + dir,
-		"ARTEX_ISOLATION_CANARY reached Bash",
-		`database session as "artex"`,
+		"SENTINEL_PRECISION_ISOLATION_CANARY reached Bash",
+		`database session as "sentinelprecision"`,
 	} {
 		if !hasFailure(failures, want) {
 			t.Errorf("no failure %q in %q", want, failures)
@@ -122,7 +122,7 @@ func TestConnectWithoutPasswordRefused(t *testing.T) {
 	}
 	port := uint16(ln.Addr().(*net.TCPAddr).Port)
 	ln.Close() // nothing listens there now
-	if err := connectWithoutPassword(&isolationProbeDB{Host: "127.0.0.1", Port: port, User: "artex", Database: "artex"}); err == nil {
+	if err := connectWithoutPassword(&isolationProbeDB{Host: "127.0.0.1", Port: port, User: "sentinelprecision", Database: "sentinelprecision"}); err == nil {
 		t.Fatal("no database listening, yet a session opened")
 	}
 }
@@ -130,9 +130,9 @@ func TestConnectWithoutPasswordRefused(t *testing.T) {
 // Against the real test database: the server's user without its password is
 // refused by PostgreSQL's authentication (it asks for the password on TCP).
 func TestConnectWithoutPasswordRealPG(t *testing.T) {
-	dsn := os.Getenv("ARTEX_PG_DSN")
+	dsn := os.Getenv("SENTINEL_PRECISION_PG_DSN")
 	if dsn == "" {
-		t.Skip("ARTEX_PG_DSN not set")
+		t.Skip("SENTINEL_PRECISION_PG_DSN not set")
 	}
 	spec := isolationSpec(ExecPrivilege{Enabled: true, UID: 10001, GID: 10001}, IsolationTargets{DSN: dsn})
 	if len(spec.DB) == 0 {
@@ -157,15 +157,15 @@ func TestIsolationSpecUsesTheDSNHosts(t *testing.T) {
 		dsn  string
 		want string
 	}{
-		{"postgres://artex:pw@db.internal:6543/artex?sslmode=disable", "db.internal:6543"},
-		{"postgres://artex:pw@db1.internal:6543,db2.internal:6544/artex?sslmode=prefer", "db1.internal:6543 db2.internal:6544"},
-		{"host=10.20.30.40 port=5433 user=artex password=pw dbname=artex", "10.20.30.40:5433"},
-		{"host=/var/run/postgresql user=artex dbname=artex", "/var/run/postgresql:5432"},
+		{"postgres://sentinelprecision:pw@db.internal:6543/sentinelprecision?sslmode=disable", "db.internal:6543"},
+		{"postgres://sentinelprecision:pw@db1.internal:6543,db2.internal:6544/sentinelprecision?sslmode=prefer", "db1.internal:6543 db2.internal:6544"},
+		{"host=10.20.30.40 port=5433 user=sentinelprecision password=pw dbname=sentinelprecision", "10.20.30.40:5433"},
+		{"host=/var/run/postgresql user=sentinelprecision dbname=sentinelprecision", "/var/run/postgresql:5432"},
 	} {
 		var got []string
 		for _, db := range isolationSpec(p, IsolationTargets{DSN: c.dsn}).DB {
 			got = append(got, fmt.Sprintf("%s:%d", db.Host, db.Port))
-			if db.User != "artex" || db.Database != "artex" {
+			if db.User != "sentinelprecision" || db.Database != "sentinelprecision" {
 				t.Errorf("%s: user %q database %q", c.dsn, db.User, db.Database)
 			}
 		}
@@ -260,7 +260,7 @@ func TestSkillTreeFailures(t *testing.T) {
 func TestIsolationSpecHasNoPassword(t *testing.T) {
 	spec := isolationSpec(ExecPrivilege{Enabled: true, UID: 10001, GID: 10002}, IsolationTargets{
 		DataDir: "/app/data", KeyDir: "/app/keys", ConfigPath: "/app/config.json",
-		DSN: "postgres://artex:s3cr3t-pw@postgres:5432/artex?sslmode=disable",
+		DSN: "postgres://sentinelprecision:s3cr3t-pw@postgres:5432/sentinelprecision?sslmode=disable",
 	})
 	for _, want := range []string{"/app/keys/jwt.key", "/app/keys/secret.key", "/app/config.json", "/app/data/traffic/_ca/mitmproxy-ca.pem"} {
 		found := false
@@ -271,7 +271,7 @@ func TestIsolationSpecHasNoPassword(t *testing.T) {
 			t.Errorf("%s missing from the unreadable files %v", want, spec.Unreadable)
 		}
 	}
-	if len(spec.DB) != 1 || spec.DB[0].Host != "postgres" || spec.DB[0].Port != 5432 || spec.DB[0].User != "artex" || spec.DB[0].Database != "artex" {
+	if len(spec.DB) != 1 || spec.DB[0].Host != "postgres" || spec.DB[0].Port != 5432 || spec.DB[0].User != "sentinelprecision" || spec.DB[0].Database != "sentinelprecision" {
 		t.Fatalf("db = %+v", spec.DB)
 	}
 	if spec.UID != 10001 || spec.GID != 10002 || spec.ServerPID != os.Getpid() {

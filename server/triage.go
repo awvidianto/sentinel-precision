@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Autumn-27/artex/agent"
+	"github.com/awvidianto/sentinel-precision/agent"
 )
 
 // triageClient builds the advisory triage client from the configured profile, or
@@ -42,7 +42,7 @@ func (s *Server) triageClient() agent.TriageClient {
 }
 
 // triageHTTPClient builds the HTTP client for the decision endpoint under the same
-// endpoint guard the model-list path uses (ARTEX_LLM_PRIVATE_ENDPOINTS, private and
+// endpoint guard the model-list path uses (SENTINEL_PRECISION_LLM_PRIVATE_ENDPOINTS, private and
 // metadata addresses refused, redirects not followed). A triage profile is a stored
 // base_url: without the guard, pointing it at an internal host makes the server dial
 // that host on every report_finding. A refused base_url returns nil and triage stays

@@ -3,7 +3,7 @@ package agent
 import (
 	"log/slog"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // coverageOn reports whether asset-coverage tools stay available for this task.

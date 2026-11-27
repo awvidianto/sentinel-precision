@@ -7,7 +7,7 @@ actions and literal command/API examples intact when adding translations.
 
 The registered locales are English (`en`), Turkish (`tr`) and Simplified Chinese
 (`zh-CN`). The Preferences language control renders `LOCALES` directly. A saved
-`artex.locale` browser preference takes priority over browser language detection;
+`sentinelprecision.locale` browser preference takes priority over browser language detection;
 otherwise an exact language tag, then its base language, is matched. Chinese
 browser variants use the available Simplified Chinese dictionary. Static export
 and unsupported languages retain the English default. Switching language saves

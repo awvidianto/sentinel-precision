@@ -3,7 +3,7 @@ package server
 import (
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // Tasks time out in deadline order, not in id order: a task created later with

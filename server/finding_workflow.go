@@ -8,10 +8,10 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/traffic"
 	actool "github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/traffic"
 )
 
 func (s *Server) seedFindingWorkflowTools() {

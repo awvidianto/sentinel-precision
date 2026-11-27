@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/llmrec"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/llmrec"
 )
 
 func TestLLMContextSummaryEndpointAuthAndAggregation(t *testing.T) {

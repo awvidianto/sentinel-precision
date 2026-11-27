@@ -51,7 +51,7 @@ Full terms: https://cwe.mitre.org/about/termsofuse.html
 
 
 def fetch(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "artex-knowledge-build/1"})
+    req = urllib.request.Request(url, headers={"User-Agent": "sentinelprecision-knowledge-build/1"})
     with urllib.request.urlopen(req, timeout=120) as resp:
         return resp.read()
 

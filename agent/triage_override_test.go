@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // dupTriageClient answers "the same defect" every time, so the suppression path

@@ -48,9 +48,9 @@ var registerMidStreamErrDriverOnce sync.Once
 
 func TestLogsMethodsReturnRowsErr(t *testing.T) {
 	registerMidStreamErrDriverOnce.Do(func() {
-		sql.Register("artex_test_mid_stream_err", midStreamErrDriver{})
+		sql.Register("sentinelprecision_test_mid_stream_err", midStreamErrDriver{})
 	})
-	raw, err := sql.Open("artex_test_mid_stream_err", "")
+	raw, err := sql.Open("sentinelprecision_test_mid_stream_err", "")
 	if err != nil {
 		t.Fatal(err)
 	}

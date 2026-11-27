@@ -33,16 +33,16 @@ RUN go mod download
 COPY . .
 # Reuse the frontend built above; build.sh skips its own frontend step.
 COPY --from=web /src/web/out ./server/webui/dist
-ARG ARTEX_VERSION=dev
+ARG SENTINEL_PRECISION_VERSION=dev
 ARG TARGETOS
 ARG TARGETARCH
-# Same flags as the release binaries job (ARTEX_COMPRESS=0, -trimpath,
+# Same flags as the release binaries job (SENTINEL_PRECISION_COMPRESS=0, -trimpath,
 # -X main.version), driven through build.sh so there is one build path.
-RUN ARTEX_SKIP_FRONTEND=1 \
-    ARTEX_SKIP_NPM_CI=1 \
-    ARTEX_COMPRESS=0 \
-    ARTEX_OUTPUT=/out/artex \
-    ARTEX_BUILD_VERSION="${ARTEX_VERSION}" \
+RUN SENTINEL_PRECISION_SKIP_FRONTEND=1 \
+    SENTINEL_PRECISION_SKIP_NPM_CI=1 \
+    SENTINEL_PRECISION_COMPRESS=0 \
+    SENTINEL_PRECISION_OUTPUT=/out/sentinelprecision \
+    SENTINEL_PRECISION_BUILD_VERSION="${SENTINEL_PRECISION_VERSION}" \
     bash ./build.sh --target "${TARGETOS:-linux}/${TARGETARCH:-amd64}"
 
 # ------------------------------------------------------- third-party tools ---
@@ -225,7 +225,7 @@ RUN set -eux; \
     test "$templates" -gt 10000
 
 # bbot recursive recon orchestrator (#117): blacklanternsecurity/bbot, AGPL-3.0
-# (same license as ARTEX; standalone CLI dependency, not linked code). Pinned
+# (same license as Sentinel Precision; standalone CLI dependency, not linked code). Pinned
 # version, own venv to isolate from the image python. Module dependencies are
 # preinstalled (--install-all-deps) so scans never need pip at runtime, which
 # would fail under a program's egress allowlist.
@@ -280,19 +280,19 @@ RUN npm install -g "@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}" "@playwright/cli@
 ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
 WORKDIR /app
 # Binary compiled from source in the build stage above.
-COPY --from=build /out/artex /app/artex
+COPY --from=build /out/sentinelprecision /app/sentinelprecision
 # Daemon startup script: relaunches the process after a crash and forwards SIGTERM
-# to artex — docker stop only signals PID 1; without forwarding, artex never receives it,
+# to sentinelprecision — docker stop only signals PID 1; without forwarding, sentinelprecision never receives it,
 # cannot shut down gracefully, and is hard-killed by SIGKILL after 10 seconds.
 COPY start.sh /app/start.sh
-RUN chmod +x /app/artex /app/start.sh && mkdir -p -m 0700 /app/keys \
+RUN chmod +x /app/sentinelprecision /app/start.sh && mkdir -p -m 0700 /app/keys \
     && chmod 0711 /root
 # No setuid or setgid programs (su, passwd, mount, bbot's chrome_sandbox, ...): an
 # agent process runs as the executor and must not regain root through one, even
 # when the container runs without docker-compose.yml's no-new-privileges.
 RUN find / -xdev -perm /6000 -type f -exec chmod a-s {} +
 COPY skills/ /app/skills/
-# persistence points: data/ (traffic index, task files, transcripts) and keys/ (jwt.key, secret.key, via ARTEX_JWT_KEY_DIR)
+# persistence points: data/ (traffic index, task files, transcripts) and keys/ (jwt.key, secret.key, via SENTINEL_PRECISION_JWT_KEY_DIR)
 VOLUME ["/app/data", "/app/keys"]
 EXPOSE 8787 8788
 ENTRYPOINT ["/app/start.sh"]

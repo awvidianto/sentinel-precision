@@ -50,7 +50,7 @@ func nameSet(names ...string) map[string]bool {
 // envExecKeep lists, comma-separated, names the drop shim keeps besides the
 // allowlist: the variables an MCP stdio server is given in its configuration. It is
 // not kept itself.
-const envExecKeep = "ARTEX_EXEC_KEEP"
+const envExecKeep = "SENTINEL_PRECISION_EXEC_KEEP"
 
 // executorEnvAllowed reports whether the variable name crosses to an agent process.
 // The locale categories are the fixed POSIX set: a variable whose name starts with

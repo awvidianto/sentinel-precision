@@ -8,17 +8,17 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Autumn-27/artex/config"
-	"github.com/Autumn-27/artex/egress"
-	"github.com/Autumn-27/artex/intercept"
+	"github.com/awvidianto/sentinel-precision/config"
+	"github.com/awvidianto/sentinel-precision/egress"
+	"github.com/awvidianto/sentinel-precision/intercept"
 )
 
 func TestAssessmentEnrichmentUserAgent(t *testing.T) {
-	const taggedUA = "ARTEX-Assessment/1.0 (engagement=FS-17)"
+	const taggedUA = "SentinelPrecision-Assessment/1.0 (engagement=FS-17)"
 	const legacyUA = "LegacyFixture/1.2"
 	prev := egress.CurrentProfile()
 	t.Cleanup(func() { egress.SetProfile(prev) })
-	t.Setenv("ARTEX_TARGET_USER_AGENT", legacyUA)
+	t.Setenv("SENTINEL_PRECISION_TARGET_USER_AGENT", legacyUA)
 	legacy, ok := egress.ProfileByName("balanced")
 	if !ok {
 		t.Fatal("balanced noise profile unavailable")
@@ -60,7 +60,7 @@ func TestAssessmentEnrichmentUserAgent(t *testing.T) {
 	}{
 		{path: "/tagged", id: "42", identity: tagged, want: taggedUA},
 		{path: "/untagged", id: "43", want: "Go-http-client/1.1"},
-		{path: "/base", id: "44", identity: base, want: "ARTEX-Assessment/1.0"},
+		{path: "/base", id: "44", identity: base, want: "SentinelPrecision-Assessment/1.0"},
 		{path: "/tagged-with-legacy", id: "42", identity: tagged, legacy: true, want: taggedUA},
 		{path: "/untagged-with-legacy", id: "43", legacy: true, want: legacyUA},
 		{path: "/redirect", id: "42", identity: tagged, want: taggedUA},

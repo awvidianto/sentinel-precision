@@ -72,7 +72,7 @@ export default function SetupPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <picture className="contents">
             <source srcSet="/logo.webp" type="image/webp" />
-            <img src="/logo.png" alt="ARTEX" width={160} height={160} className="relative brightness-0 invert" />
+            <img src="/logo.png" alt="Sentinel Precision" width={160} height={160} className="relative brightness-0 invert" />
           </picture>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function SetupPage() {
                     "The backend or database is temporarily unavailable. To avoid overwriting a password already set on this instance, setup is temporarily closed — restore the service and try again.",
                   )
                 : t(
-                    "First time using ARTEX? Enter the setup token from the server log, then set a login password for the account (at least 12 characters)",
+                    "First time using Sentinel Precision? Enter the setup token from the server log, then set a login password for the account (at least 12 characters)",
                   )}
             </p>
           </div>

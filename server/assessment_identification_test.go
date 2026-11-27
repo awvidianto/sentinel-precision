@@ -13,15 +13,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/config"
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/egress"
-	"github.com/Autumn-27/artex/intercept"
-	"github.com/Autumn-27/artex/traffic"
+	"github.com/awvidianto/sentinel-precision/config"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/egress"
+	"github.com/awvidianto/sentinel-precision/intercept"
+	"github.com/awvidianto/sentinel-precision/traffic"
 )
 
 const (
-	assessmentTestUA = "ARTEX-Assessment/1.0 (engagement=FS-17)"
+	assessmentTestUA = "SentinelPrecision-Assessment/1.0 (engagement=FS-17)"
 	goTestUA         = "Go-http-client/1.1"
 	legacyTestUA     = "LegacyFixture/1.2"
 )
@@ -47,7 +47,7 @@ func assessmentTaskContext(t *testing.T, id, reference string, origins ...string
 func TestAssessmentHTTPToolUserAgent(t *testing.T) {
 	prev := egress.CurrentProfile()
 	t.Cleanup(func() { egress.SetProfile(prev) })
-	t.Setenv("ARTEX_TARGET_USER_AGENT", legacyTestUA)
+	t.Setenv("SENTINEL_PRECISION_TARGET_USER_AGENT", legacyTestUA)
 	legacy, ok := egress.ProfileByName("balanced")
 	if !ok {
 		t.Fatal("balanced noise profile unavailable")
@@ -72,7 +72,7 @@ func TestAssessmentHTTPToolUserAgent(t *testing.T) {
 		want    string
 	}{
 		{name: "tagged task, noise off", ctx: tagged, want: assessmentTestUA},
-		{name: "configured without reference", ctx: base, want: "ARTEX-Assessment/1.0"},
+		{name: "configured without reference", ctx: base, want: "SentinelPrecision-Assessment/1.0"},
 		{name: "unconfigured task after tagged task", ctx: untagged, want: goTestUA},
 		{name: "unscoped editor test", ctx: context.Background(), want: goTestUA},
 		{name: "conversation ID equals configured task ID", ctx: conversation, want: goTestUA},
@@ -213,8 +213,8 @@ func TestAssessmentStartupScopesCurrentTasks(t *testing.T) {
 	if err := os.WriteFile(cfgPath, execJSON(t, cfg), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("ARTEX_CONFIG", cfgPath)
-	t.Setenv("ARTEX_PG_DSN", dsn)
+	t.Setenv("SENTINEL_PRECISION_CONFIG", cfgPath)
+	t.Setenv("SENTINEL_PRECISION_PG_DSN", dsn)
 	prev := egress.CurrentProfile()
 	t.Cleanup(func() { egress.SetProfile(prev) })
 	m, err := NewManager(t.TempDir(), "")

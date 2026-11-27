@@ -244,7 +244,7 @@ class JudgeTests(unittest.TestCase):
                 self.llm.return_value = json.dumps(response)
                 findings = [{**f, "summary": "fixture", "report": "fixture"} for f in self.findings]
                 argv = ["run_bench.py", "--subject-model", "subject", "--corpus-url", "http://fixture.test"]
-                env = {"ARTEX_TOKEN": "fixture", "JUDGE_BASE_URL": "http://judge.test",
+                env = {"SENTINEL_PRECISION_TOKEN": "fixture", "JUDGE_BASE_URL": "http://judge.test",
                        "JUDGE_MODEL": "judge", "JUDGE_API_KEY": "fixture"}
                 with mock.patch.object(run_bench.sys, "argv", argv), \
                         mock.patch.dict(run_bench.os.environ, env, clear=True), \

@@ -15,7 +15,7 @@ import (
 	"time"
 	"unicode/utf16"
 
-	"github.com/Autumn-27/artex/notify"
+	"github.com/awvidianto/sentinel-precision/notify"
 )
 
 // KindTelegram is the Telegram Bot API transport.
@@ -248,7 +248,7 @@ func telegramError(method string, status int, env telegramResponse[json.RawMessa
 	case http.StatusUnauthorized, http.StatusNotFound:
 		return fmt.Errorf("telegram %s: the bot token was rejected (%d %s)", method, code, desc)
 	case http.StatusConflict:
-		return fmt.Errorf("telegram %s: another poller or a webhook is using this bot token (%s); give ARTEX its own bot or remove the webhook", method, desc)
+		return fmt.Errorf("telegram %s: another poller or a webhook is using this bot token (%s); give Sentinel Precision its own bot or remove the webhook", method, desc)
 	case http.StatusTooManyRequests:
 		after := 5 * time.Second
 		if env.Parameters != nil && env.Parameters.RetryAfter > 0 {

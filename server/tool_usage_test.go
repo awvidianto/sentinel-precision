@@ -8,8 +8,8 @@ import (
 
 	actool "github.com/Autumn-27/norma/tool"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 type recordingToolUsage struct {

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // The task report summarises the task's own assets, not every asset in the

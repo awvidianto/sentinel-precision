@@ -10,10 +10,10 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
-	"github.com/Autumn-27/artex/guard"
-	"github.com/Autumn-27/artex/intercept"
 	"github.com/Autumn-27/norma/llm"
+	"github.com/awvidianto/sentinel-precision/db"
+	"github.com/awvidianto/sentinel-precision/guard"
+	"github.com/awvidianto/sentinel-precision/intercept"
 )
 
 // Every agent kind hands its tool calls to the hooks it is given, on the context

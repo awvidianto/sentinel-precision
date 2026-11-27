@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // rsiLessonsMode reads the shadow-mode switch:
@@ -23,7 +23,7 @@ import (
 // The flag is read per task-bundle build, so changing it needs a new task or a
 // task-agent invalidation, not a restart.
 func rsiLessonsMode() string {
-	switch strings.ToLower(strings.TrimSpace(os.Getenv("ARTEX_RSI_LESSONS"))) {
+	switch strings.ToLower(strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_RSI_LESSONS"))) {
 	case "shadow":
 		return "shadow"
 	case "inject":

@@ -1,5 +1,5 @@
 // Package chatbridge is the inbound side of the chat-app integration: an
-// operator talks to ARTEX from a chat app (Telegram first) instead of the web
+// operator talks to Sentinel Precision from a chat app (Telegram first) instead of the web
 // UI. The outbound side, pushing findings, stays in package notify.
 //
 // The package is transport-agnostic. A Transport only knows how to fetch new

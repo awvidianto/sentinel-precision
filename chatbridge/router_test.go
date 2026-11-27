@@ -11,7 +11,7 @@ var testNow = time.Date(2026, 11, 21, 12, 0, 0, 0, time.UTC)
 
 func testRouter() *Router {
 	return &Router{
-		BotUserName: "artex_bot",
+		BotUserName: "sentinelprecision_bot",
 		Now:         func() time.Time { return testNow },
 		Commands: []Command{{
 			Name: "echo", Usage: "<text>", Summary: "repeat the text",
@@ -34,7 +34,7 @@ func TestRouteAllowedCommand(t *testing.T) {
 
 func TestRouteCommandAddressedToThisOrOtherBot(t *testing.T) {
 	r := testRouter()
-	if d, reply := r.Route(context.Background(), KindTelegram, []string{"100"}, msg("100", "/ECHO@Artex_Bot x")); d != DecisionHandled || !strings.HasPrefix(reply, "echo:x") {
+	if d, reply := r.Route(context.Background(), KindTelegram, []string{"100"}, msg("100", "/ECHO@SentinelPrecision_Bot x")); d != DecisionHandled || !strings.HasPrefix(reply, "echo:x") {
 		t.Fatalf("own bot: got %v %q", d, reply)
 	}
 	if d, reply := r.Route(context.Background(), KindTelegram, []string{"100"}, msg("100", "/echo@other_bot x")); d != DecisionIgnored || reply != "" {

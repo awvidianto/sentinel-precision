@@ -10,9 +10,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Autumn-27/artex/agent"
 	"github.com/Autumn-27/norma/llm"
 	actool "github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/agent"
 )
 
 type captureToolsLLM struct {

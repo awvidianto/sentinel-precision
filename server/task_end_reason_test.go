@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // A budget wrap-up's end_reason belongs to that run: the revive (terminal ->

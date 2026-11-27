@@ -1,0 +1,25 @@
+[Unit]
+Description=Sentinel Precision application
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=sentinelprecision
+Group=sentinelprecision
+WorkingDirectory=/opt/sentinelprecision
+Environment=SENTINEL_PRECISION_JWT_KEY_DIR=/opt/sentinelprecision/keys
+ExecStart=/opt/sentinelprecision/sentinelprecision -addr 127.0.0.1:8787 -proxy 127.0.0.1:8788
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+KillSignal=SIGTERM
+KillMode=control-group
+UMask=0002
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sentinelprecision
+
+[Install]
+WantedBy=multi-user.target

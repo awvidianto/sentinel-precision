@@ -1,4 +1,4 @@
--- ARTEX PostgreSQL schema (single source of truth)
+-- Sentinel Precision PostgreSQL schema (single source of truth)
 -- Idempotent: safe to run repeatedly (IF NOT EXISTS / OR REPLACE / DROP TRIGGER IF EXISTS).
 
 -- =====================================================================

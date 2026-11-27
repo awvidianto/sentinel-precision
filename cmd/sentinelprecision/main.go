@@ -1,4 +1,4 @@
-// Command artex runs the ARTEX backend: the dual PostgreSQL graph stores,
+// Command sentinelprecision runs the Sentinel Precision backend: the dual PostgreSQL graph stores,
 // the event-driven exploration engine, and the JSON HTTP API consumed by the
 // shadcn/ui frontend.
 package main
@@ -18,10 +18,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Autumn-27/artex/agent"
-	"github.com/Autumn-27/artex/config"
-	"github.com/Autumn-27/artex/egress"
-	"github.com/Autumn-27/artex/server"
+	"github.com/awvidianto/sentinel-precision/agent"
+	"github.com/awvidianto/sentinel-precision/config"
+	"github.com/awvidianto/sentinel-precision/egress"
+	"github.com/awvidianto/sentinel-precision/server"
 )
 
 // configSnapshot is the single startup log line describing the effective
@@ -142,9 +142,9 @@ func run() int {
 	// JWT signing key directory (also holds secret.key, see server.NewManager).
 	keyDir := config.KeyDir()
 	// Proxies whose X-Forwarded-For the login rate limit reads; empty trusts none.
-	trusted, err := server.ParseTrustedProxies(os.Getenv("ARTEX_TRUSTED_PROXIES"))
+	trusted, err := server.ParseTrustedProxies(os.Getenv("SENTINEL_PRECISION_TRUSTED_PROXIES"))
 	if err != nil {
-		slog.Error("[config] invalid ARTEX_TRUSTED_PROXIES", "err", err)
+		slog.Error("[config] invalid SENTINEL_PRECISION_TRUSTED_PROXIES", "err", err)
 		return 1
 	}
 	trustedAddrs := make([]string, 0, len(trusted))
@@ -226,7 +226,7 @@ func run() int {
 	}
 
 	go func() {
-		slog.Info("ARTEX backend listening", "version", version, "addr", *addr, "data", *dataDir, "workers", mgr.Workers())
+		slog.Info("Sentinel Precision backend listening", "version", version, "addr", *addr, "data", *dataDir, "workers", mgr.Workers())
 		if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("serve: %v", err)
 		}

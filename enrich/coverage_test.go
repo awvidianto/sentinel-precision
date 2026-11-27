@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -487,7 +487,7 @@ func TestDoDNSWithResolverDeadDB(t *testing.T) {
 func TestDoDNSQueryError(t *testing.T) {
 	e := testResolver(t)
 	e.as = deadAssetStore(t)
-	e.doDNS(1, "this-domain-does-not-exist-artex-test.example")
+	e.doDNS(1, "this-domain-does-not-exist-sentinelprecision-test.example")
 }
 
 func TestDoDNSCNAME(t *testing.T) {

@@ -14,7 +14,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/Autumn-27/artex/egress"
+	"github.com/awvidianto/sentinel-precision/egress"
 )
 
 var (

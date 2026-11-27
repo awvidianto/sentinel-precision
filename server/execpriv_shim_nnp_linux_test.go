@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-const nnpShimHelperEnv = "ARTEX_NNP_SHIM_HELPER"
+const nnpShimHelperEnv = "SENTINEL_PRECISION_NNP_SHIM_HELPER"
 
 // PR_SET_NO_NEW_PRIVS is per thread: the thread that sets it must be the one that
 // execs. This runs the real drop shim as root with GOMAXPROCS=1 and wraps
@@ -67,7 +67,7 @@ func TestExecDropShimNoNewPrivsHelper(t *testing.T) {
 		return nil
 	}
 	RunExecShimIfRequested([]string{
-		"artex", execDropArg, strconv.Itoa(DefaultExecUID), strconv.Itoa(DefaultExecGID), "--",
+		"sentinelprecision", execDropArg, strconv.Itoa(DefaultExecUID), strconv.Itoa(DefaultExecGID), "--",
 		"/bin/sh", "-c", "grep NoNewPrivs /proc/self/status",
 	})
 	t.Fatal("the drop shim returned instead of exec-ing the target")

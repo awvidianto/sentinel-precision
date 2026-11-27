@@ -6,7 +6,7 @@ import (
 )
 
 // LLMContext is one context-size telemetry row, written on every model call while
-// telemetry is on (the default; ARTEX_CONTEXT_TELEMETRY=0|false|off|no turns it off).
+// telemetry is on (the default; SENTINEL_PRECISION_CONTEXT_TELEMETRY=0|false|off|no turns it off).
 // It records only byte sizes, counts, token usage,
 // and call metadata — never any prompt, tool, or message content.
 type LLMContext struct {

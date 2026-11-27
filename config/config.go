@@ -56,10 +56,10 @@ func BaseDir() string {
 	return dir
 }
 
-// KeyDir holds jwt.key and secret.key: ARTEX_JWT_KEY_DIR (the Docker image points
+// KeyDir holds jwt.key and secret.key: SENTINEL_PRECISION_JWT_KEY_DIR (the Docker image points
 // it at the /app/keys volume) or the base dir. Never the browsable data dir.
 func KeyDir() string {
-	dir := strings.TrimSpace(os.Getenv("ARTEX_JWT_KEY_DIR"))
+	dir := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_JWT_KEY_DIR"))
 	if dir == "" {
 		dir = BaseDir()
 	}
@@ -89,7 +89,7 @@ func isGoRunDir(dir string) bool {
 }
 
 // Path returns the config file path. Resolution order:
-//  1. env ARTEX_CONFIG (explicit override)
+//  1. env SENTINEL_PRECISION_CONFIG (explicit override)
 //  2. ./config.json in the current working directory (running from the project
 //     dir — robust no matter where `go run` placed the temp/cached binary)
 //  3. config.json next to the executable (a distributed binary keeps it beside)
@@ -97,7 +97,7 @@ func isGoRunDir(dir string) bool {
 // The first existing file wins. If none exist, the CWD path is returned so the
 // "not found" message points at the project dir the user most likely expected.
 func Path() string {
-	if v := strings.TrimSpace(os.Getenv("ARTEX_CONFIG")); v != "" {
+	if v := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_CONFIG")); v != "" {
 		return v
 	}
 	var candidates []string
@@ -140,12 +140,12 @@ func Load() (Config, error) {
 
 // SkillDir returns the skill root directory with precedence:
 //
-//	env ARTEX_SKILL_DIR  >  config file (skill_dir)  >  BaseDir()/skills
+//	env SENTINEL_PRECISION_SKILL_DIR  >  config file (skill_dir)  >  BaseDir()/skills
 //
 // The directory is created if it does not exist.
 func SkillDir() (string, error) {
 	var d string
-	if v := strings.TrimSpace(os.Getenv("ARTEX_SKILL_DIR")); v != "" {
+	if v := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_SKILL_DIR")); v != "" {
 		d = v
 	} else {
 		c, err := Load()
@@ -164,14 +164,14 @@ func SkillDir() (string, error) {
 
 // PostgresDSN resolves the connection string with precedence:
 //
-//	env ARTEX_PG_DSN
-//	  >  env ARTEX_PG_HOST / ARTEX_PG_PORT / ARTEX_PG_USER / ARTEX_PG_PASSWORD /
-//	     ARTEX_PG_DBNAME / ARTEX_PG_SSLMODE
+//	env SENTINEL_PRECISION_PG_DSN
+//	  >  env SENTINEL_PRECISION_PG_HOST / SENTINEL_PRECISION_PG_PORT / SENTINEL_PRECISION_PG_USER / SENTINEL_PRECISION_PG_PASSWORD /
+//	     SENTINEL_PRECISION_PG_DBNAME / SENTINEL_PRECISION_PG_SSLMODE
 //	  >  config file (database.dsn, or assembled from fields)
 //
 // The component variables are how Docker Compose passes a password that contains
 // URL-special characters: the password stays a raw environment value, and
-// buildDSN percent-encodes it. An explicit ARTEX_PG_DSN is returned unchanged,
+// buildDSN percent-encodes it. An explicit SENTINEL_PRECISION_PG_DSN is returned unchanged,
 // so a value that was already assembled by something else is not rewritten.
 //
 // There is NO built-in fallback: when neither source supplies a database config,
@@ -179,11 +179,11 @@ func SkillDir() (string, error) {
 // instead of silently connecting to a wrong default. source describes where the
 // DSN came from (for startup logging).
 func PostgresDSN() (dsn, source string, err error) {
-	if v := strings.TrimSpace(os.Getenv("ARTEX_PG_DSN")); v != "" {
-		return v, "environment variable ARTEX_PG_DSN", nil
+	if v := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_PG_DSN")); v != "" {
+		return v, "environment variable SENTINEL_PRECISION_PG_DSN", nil
 	}
 	if d, ok, err := postgresDSNFromEnv(); ok || err != nil {
-		return d, "environment variables ARTEX_PG_HOST/USER/PASSWORD/DBNAME", err
+		return d, "environment variables SENTINEL_PRECISION_PG_HOST/USER/PASSWORD/DBNAME", err
 	}
 	c, err := Load()
 	if err != nil {
@@ -196,19 +196,19 @@ func PostgresDSN() (dsn, source string, err error) {
 	if db.Host != "" || db.DBName != "" || db.User != "" {
 		return db.buildDSN(), "config file " + Path() + " (database fields)", nil
 	}
-	return "", "", fmt.Errorf("no database config found: ARTEX_PG_DSN is not set, ARTEX_PG_HOST/USER/PASSWORD/DBNAME are not set, and config file %s provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry", Path())
+	return "", "", fmt.Errorf("no database config found: SENTINEL_PRECISION_PG_DSN is not set, SENTINEL_PRECISION_PG_HOST/USER/PASSWORD/DBNAME are not set, and config file %s provides no database (dsn or host/user/dbname). Create the config file or set the environment variable and retry", Path())
 }
 
 // postgresDSNFromEnv assembles a URL from the component environment variables.
 // ok is false when none of them is set. The password is not trimmed: a space is
 // a legal character and is the case docker-compose used to break.
 func postgresDSNFromEnv() (dsn string, ok bool, err error) {
-	host := strings.TrimSpace(os.Getenv("ARTEX_PG_HOST"))
-	user := strings.TrimSpace(os.Getenv("ARTEX_PG_USER"))
-	password := os.Getenv("ARTEX_PG_PASSWORD")
-	dbname := strings.TrimSpace(os.Getenv("ARTEX_PG_DBNAME"))
-	portStr := strings.TrimSpace(os.Getenv("ARTEX_PG_PORT"))
-	ssl := strings.TrimSpace(os.Getenv("ARTEX_PG_SSLMODE"))
+	host := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_PG_HOST"))
+	user := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_PG_USER"))
+	password := os.Getenv("SENTINEL_PRECISION_PG_PASSWORD")
+	dbname := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_PG_DBNAME"))
+	portStr := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_PG_PORT"))
+	ssl := strings.TrimSpace(os.Getenv("SENTINEL_PRECISION_PG_SSLMODE"))
 	if host == "" && user == "" && password == "" && dbname == "" && portStr == "" && ssl == "" {
 		return "", false, nil
 	}
@@ -216,7 +216,7 @@ func postgresDSNFromEnv() (dsn string, ok bool, err error) {
 	if portStr != "" {
 		n, convErr := strconv.Atoi(portStr)
 		if convErr != nil || n <= 0 || n > 65535 {
-			return "", true, fmt.Errorf("ARTEX_PG_PORT %q is not a TCP port", portStr)
+			return "", true, fmt.Errorf("SENTINEL_PRECISION_PG_PORT %q is not a TCP port", portStr)
 		}
 		port = n
 	}

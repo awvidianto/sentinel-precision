@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/notify"
+	"github.com/awvidianto/sentinel-precision/notify"
 )
 
 const testToken = "123456789:AAtest_token-abcdefghijklmnop"
@@ -185,9 +185,9 @@ func TestTelegramSendIsPlainTextAndTruncated(t *testing.T) {
 
 func TestTelegramIdentity(t *testing.T) {
 	f, cfg := newFakeTelegram(t)
-	f.on("getMe", `{"ok":true,"result":{"id":123456789,"is_bot":true,"username":"artex_bot","first_name":"ARTEX"}}`, 200)
+	f.on("getMe", `{"ok":true,"result":{"id":123456789,"is_bot":true,"username":"sentinelprecision_bot","first_name":"Sentinel Precision"}}`, 200)
 	id, err := telegramTransport{}.Identity(context.Background(), cfg)
-	if err != nil || id.UserName != "artex_bot" || id.ID != "123456789" || id.Name != "ARTEX" {
+	if err != nil || id.UserName != "sentinelprecision_bot" || id.ID != "123456789" || id.Name != "Sentinel Precision" {
 		t.Fatalf("identity = %+v, %v", id, err)
 	}
 }

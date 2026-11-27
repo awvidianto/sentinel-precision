@@ -24,8 +24,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Autumn-27/artex/config"
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/config"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // ctxKey is the unexported context key type to avoid collisions.

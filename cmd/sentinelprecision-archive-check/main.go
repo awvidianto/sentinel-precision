@@ -1,4 +1,4 @@
-// artex-archive-check tests the configured object store without touching tasks.
+// sentinelprecision-archive-check tests the configured object store without touching tasks.
 package main
 
 import (
@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Autumn-27/artex/archivestore"
+	"github.com/awvidianto/sentinel-precision/archivestore"
 )
 
 func main() {
@@ -29,12 +29,12 @@ func check() error {
 	if s == nil {
 		return fmt.Errorf("S3 archive storage is not configured")
 	}
-	dir, err := os.MkdirTemp("", "artex-archive-check-")
+	dir, err := os.MkdirTemp("", "sentinelprecision-archive-check-")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(dir)
-	data := []byte("ARTEX object storage connectivity check " + time.Now().UTC().Format(time.RFC3339Nano))
+	data := []byte("Sentinel Precision object storage connectivity check " + time.Now().UTC().Format(time.RFC3339Nano))
 	h := sha256.Sum256(data)
 	checksum := hex.EncodeToString(h[:])
 	uri := s.URI(0, time.Now().UnixNano(), checksum)

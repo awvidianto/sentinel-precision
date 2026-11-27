@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# ARTEX update script: (1) Docker update (rebuild the image from this checkout)  (2) local build update (rebuild the binary)
+# Sentinel Precision update script: (1) Docker update (rebuild the image from this checkout)  (2) local build update (rebuild the binary)
 # Counterpart of install.sh: install handles the first-time setup, update upgrades to a new version.
-# No manual DB migration needed — artex idempotently re-runs schema.sql on every start (with ADD COLUMN/CREATE
+# No manual DB migration needed — sentinelprecision idempotently re-runs schema.sql on every start (with ADD COLUMN/CREATE
 # INDEX IF NOT EXISTS), so "restart equals migrate". Data (pgdata volume, ./data, ./skills) is not affected.
 set -euo pipefail
 cd "$(cd "$(dirname "$0")" && pwd)"
@@ -38,15 +38,15 @@ update_docker(){
     || die "docker buildx not detected; the image build needs it (see the Docker section of the README)"
   [ -f .env ] || die ".env not found; run ./install.sh first to complete the initial deployment"
 
-  # Touch only artex: postgres is pinned to 16-alpine and does not need upgrading along
-  # (pulling it wastes bandwidth, and a major version bump risks compatibility). artex
+  # Touch only sentinelprecision: postgres is pinned to 16-alpine and does not need upgrading along
+  # (pulling it wastes bandwidth, and a major version bump risks compatibility). sentinelprecision
   # declares depends_on postgres, so an up with the service name starts pg if needed and leaves a running one untouched.
-  info "Building the image from this checkout (artex only)…"
-  docker compose build artex
-  info "Recreating artex (schema migrates automatically on restart)…"
-  docker compose up -d artex
+  info "Building the image from this checkout (sentinelprecision only)…"
+  docker compose build sentinelprecision
+  info "Recreating sentinelprecision (schema migrates automatically on restart)…"
+  docker compose up -d sentinelprecision
   ok "Update complete → http://localhost:8787"
-  info "View logs: docker compose logs -f artex"
+  info "View logs: docker compose logs -f sentinelprecision"
   info "Clean up old images (optional): docker image prune -f"
 }
 
@@ -61,17 +61,17 @@ update_local(){
     ( cd web && npm ci --ignore-scripts && npm run build:static )
     rm -rf server/webui/dist && mkdir -p server/webui && cp -r web/out server/webui/dist
     info "Recompiling the embedded single binary…"
-    CGO_ENABLED=0 go build -tags embedui -trimpath -o artex ./cmd/artex
+    CGO_ENABLED=0 go build -tags embedui -trimpath -o sentinelprecision ./cmd/sentinelprecision
   else
     warn "npm not detected: building a backend **without the embedded frontend** (run the frontend separately with npm run dev)"
-    CGO_ENABLED=0 go build -o artex ./cmd/artex
+    CGO_ENABLED=0 go build -o sentinelprecision ./cmd/sentinelprecision
   fi
-  ok "Build complete → ./artex"
-  warn "Restart the running artex process to take effect (schema migrates automatically on restart)"
+  ok "Build complete → ./sentinelprecision"
+  warn "Restart the running sentinelprecision process to take effect (schema migrates automatically on restart)"
 }
 
 echo "=============================="
-echo "  ARTEX Update"
+echo "  Sentinel Precision Update"
 echo "  1) Docker update (pull new image and rebuild)"
 echo "  2) Local update (rebuild with go)"
 echo "=============================="

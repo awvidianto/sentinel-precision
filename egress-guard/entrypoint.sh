@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # egress-guard entrypoint.
 #   EGRESS_MODE           monitor (default: log only) | enforce (log + reject) | off (DNS only)
-#   ARTEX_SUBNET          the ARTEX docker network (must match docker-compose.yml)
-#   ARTEX_GATEWAY         bridge gateway IP; dnsmasq listens here
-#   ARTEX_SUBNET6         optional IPv6 subnet; when set, enforce also drops its egress
+#   SENTINEL_PRECISION_SUBNET          the Sentinel Precision docker network (must match docker-compose.yml)
+#   SENTINEL_PRECISION_GATEWAY         bridge gateway IP; dnsmasq listens here
+#   SENTINEL_PRECISION_SUBNET6         optional IPv6 subnet; when set, enforce also drops its egress
 #   EGRESS_FILTER_GATEWAY 1 = in enforce, also drop non-DNS traffic from the subnet to the
 #                         host/gateway (closes the host-proxy bypass). Off by default because
 #                         it edits the host INPUT chain. See README "Known gaps".
@@ -13,14 +13,14 @@
 # Fail-closed (enforce): a blanket deny for the subnet's egress is installed BEFORE the allowlist
 # is built and removed only after setup completes. If any setup step fails, the ERR trap leaves
 # that deny in place and exits non-zero, so Docker restarts the guard while traffic stays blocked.
-# The operator then sees the ARTEX container lose outbound connectivity (except DNS) until the
+# The operator then sees the Sentinel Precision container lose outbound connectivity (except DNS) until the
 # guard comes up cleanly. In monitor/off mode a setup failure is non-fatal by design (log only).
 set -Eeuo pipefail   # -E so the ERR trap fires for failures inside functions (apply_rules)
 
 MODE="${EGRESS_MODE:-monitor}"
-SUBNET="${ARTEX_SUBNET:?ARTEX_SUBNET required}"
-GW="${ARTEX_GATEWAY:?ARTEX_GATEWAY required}"
-SUBNET6="${ARTEX_SUBNET6:-}"
+SUBNET="${SENTINEL_PRECISION_SUBNET:?SENTINEL_PRECISION_SUBNET required}"
+GW="${SENTINEL_PRECISION_GATEWAY:?SENTINEL_PRECISION_GATEWAY required}"
+SUBNET6="${SENTINEL_PRECISION_SUBNET6:-}"
 FILTER_GW="${EGRESS_FILTER_GATEWAY:-0}"
 TIMEOUT="${IPSET_TIMEOUT:-21600}"
 LISTS=/etc/egress-guard
@@ -33,8 +33,8 @@ IP6T=ip6tables
 command -v ip6tables-nft >/dev/null 2>&1 && IP6T=ip6tables-nft
 [ -n "${IP6TABLES_BIN:-}" ] && IP6T="$IP6TABLES_BIN"
 
-BOOT_CMT="artex-egress-bootstrap-deny"
-V6_CMT="artex-egress-v6-deny"
+BOOT_CMT="sentinelprecision-egress-bootstrap-deny"
+V6_CMT="sentinelprecision-egress-v6-deny"
 
 log() { echo "[egress-guard] $*"; }
 
@@ -59,7 +59,7 @@ bootstrap_deny() {
     $IP6T -I DOCKER-USER 1 -s "$SUBNET6" -m comment --comment "$BOOT_CMT" -j DROP 2>/dev/null \
       || log "WARN: ip6tables unavailable; IPv6 egress NOT filtered"
   elif command -v "$IP6T" >/dev/null 2>&1; then
-    log "WARN: ARTEX_SUBNET6 unset; IPv6 egress is NOT filtered (keep the ARTEX network IPv4-only)"
+    log "WARN: SENTINEL_PRECISION_SUBNET6 unset; IPv6 egress is NOT filtered (keep the Sentinel Precision network IPv4-only)"
   fi
 }
 
@@ -80,23 +80,23 @@ cleanup_rules() {
   # is correct, and on startup before setup, where re-adding happens in bootstrap_deny.
   remove_bootstrap_deny
   # filter table: detach and delete our chain
-  while $IPT -C DOCKER-USER -s "$SUBNET" ! -d "$SUBNET" -j ARTEX-EGRESS 2>/dev/null; do
-    $IPT -D DOCKER-USER -s "$SUBNET" ! -d "$SUBNET" -j ARTEX-EGRESS
+  while $IPT -C DOCKER-USER -s "$SUBNET" ! -d "$SUBNET" -j SENTINEL-EGRESS 2>/dev/null; do
+    $IPT -D DOCKER-USER -s "$SUBNET" ! -d "$SUBNET" -j SENTINEL-EGRESS
   done
-  $IPT -F ARTEX-EGRESS 2>/dev/null || true
-  $IPT -X ARTEX-EGRESS 2>/dev/null || true
+  $IPT -F SENTINEL-EGRESS 2>/dev/null || true
+  $IPT -X SENTINEL-EGRESS 2>/dev/null || true
   # optional host INPUT filter for the gateway
-  while $IPT -C INPUT -s "$SUBNET" -d "$GW" -j ARTEX-EGRESS-HOST 2>/dev/null; do
-    $IPT -D INPUT -s "$SUBNET" -d "$GW" -j ARTEX-EGRESS-HOST
+  while $IPT -C INPUT -s "$SUBNET" -d "$GW" -j SENTINEL-EGRESS-HOST 2>/dev/null; do
+    $IPT -D INPUT -s "$SUBNET" -d "$GW" -j SENTINEL-EGRESS-HOST
   done
-  $IPT -F ARTEX-EGRESS-HOST 2>/dev/null || true
-  $IPT -X ARTEX-EGRESS-HOST 2>/dev/null || true
+  $IPT -F SENTINEL-EGRESS-HOST 2>/dev/null || true
+  $IPT -X SENTINEL-EGRESS-HOST 2>/dev/null || true
   # nat table: DNS redirect
-  while $IPT -t nat -C PREROUTING -s "$SUBNET" -j ARTEX-DNS 2>/dev/null; do
-    $IPT -t nat -D PREROUTING -s "$SUBNET" -j ARTEX-DNS
+  while $IPT -t nat -C PREROUTING -s "$SUBNET" -j SENTINEL-DNS 2>/dev/null; do
+    $IPT -t nat -D PREROUTING -s "$SUBNET" -j SENTINEL-DNS
   done
-  $IPT -t nat -F ARTEX-DNS 2>/dev/null || true
-  $IPT -t nat -X ARTEX-DNS 2>/dev/null || true
+  $IPT -t nat -F SENTINEL-DNS 2>/dev/null || true
+  $IPT -t nat -X SENTINEL-DNS 2>/dev/null || true
   # persistent IPv6 deny rule installed in apply_rules
   if [ -n "$SUBNET6" ] && command -v "$IP6T" >/dev/null 2>&1; then
     while $IP6T -C DOCKER-USER -s "$SUBNET6" -m comment --comment "$V6_CMT" -j DROP 2>/dev/null; do
@@ -106,47 +106,47 @@ cleanup_rules() {
 }
 
 apply_rules() {
-  ipset create artex_allow hash:ip timeout "$TIMEOUT" -exist
-  ipset flush artex_allow   # drop IPs allowed in a previous run: a host removed from the
+  ipset create sentinelprecision_allow hash:ip timeout "$TIMEOUT" -exist
+  ipset flush sentinelprecision_allow   # drop IPs allowed in a previous run: a host removed from the
                             # lists must not stay reachable until the ipset timeout expires.
-  ipset create artex_scope hash:net -exist
-  ipset flush artex_scope
+  ipset create sentinelprecision_scope hash:net -exist
+  ipset flush sentinelprecision_scope
   local n=0
-  while read -r cidr; do ipset add artex_scope "$cidr" -exist && n=$((n+1)); done < <(read_list "$LISTS/scope-cidrs.txt")
+  while read -r cidr; do ipset add sentinelprecision_scope "$cidr" -exist && n=$((n+1)); done < <(read_list "$LISTS/scope-cidrs.txt")
   log "scope CIDRs loaded: $n"
 
   [ "$MODE" = off ] && { log "mode off: no firewall rules"; return; }
 
-  # Redirect every DNS query leaving the ARTEX network to dnsmasq, so tools with
+  # Redirect every DNS query leaving the Sentinel Precision network to dnsmasq, so tools with
   # hard-coded resolvers (dnsx, bbot, dig @8.8.8.8) still populate the allowlist.
-  $IPT -t nat -N ARTEX-DNS
-  $IPT -t nat -A ARTEX-DNS -d "$GW" -j RETURN
-  $IPT -t nat -A ARTEX-DNS -p udp --dport 53 -j DNAT --to-destination "$GW:53"
-  $IPT -t nat -A ARTEX-DNS -p tcp --dport 53 -j DNAT --to-destination "$GW:53"
-  $IPT -t nat -I PREROUTING 1 -s "$SUBNET" -j ARTEX-DNS
+  $IPT -t nat -N SENTINEL-DNS
+  $IPT -t nat -A SENTINEL-DNS -d "$GW" -j RETURN
+  $IPT -t nat -A SENTINEL-DNS -p udp --dport 53 -j DNAT --to-destination "$GW:53"
+  $IPT -t nat -A SENTINEL-DNS -p tcp --dport 53 -j DNAT --to-destination "$GW:53"
+  $IPT -t nat -I PREROUTING 1 -s "$SUBNET" -j SENTINEL-DNS
 
-  $IPT -N ARTEX-EGRESS
-  $IPT -A ARTEX-EGRESS -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
-  $IPT -A ARTEX-EGRESS -m set --match-set artex_allow dst -j RETURN
-  $IPT -A ARTEX-EGRESS -m set --match-set artex_scope dst -j RETURN
-  $IPT -A ARTEX-EGRESS -m limit --limit 30/min --limit-burst 60 -j LOG --log-prefix "ARTEX-EGRESS-$MODE " --log-level 4
+  $IPT -N SENTINEL-EGRESS
+  $IPT -A SENTINEL-EGRESS -m conntrack --ctstate ESTABLISHED,RELATED -j RETURN
+  $IPT -A SENTINEL-EGRESS -m set --match-set sentinelprecision_allow dst -j RETURN
+  $IPT -A SENTINEL-EGRESS -m set --match-set sentinelprecision_scope dst -j RETURN
+  $IPT -A SENTINEL-EGRESS -m limit --limit 30/min --limit-burst 60 -j LOG --log-prefix "SENTINEL-EGRESS-$MODE " --log-level 4
   if [ "$MODE" = enforce ]; then
-    $IPT -A ARTEX-EGRESS -p tcp -j REJECT --reject-with tcp-reset
-    $IPT -A ARTEX-EGRESS -j REJECT --reject-with icmp-port-unreachable
+    $IPT -A SENTINEL-EGRESS -p tcp -j REJECT --reject-with tcp-reset
+    $IPT -A SENTINEL-EGRESS -j REJECT --reject-with icmp-port-unreachable
   else
-    $IPT -A ARTEX-EGRESS -j RETURN
+    $IPT -A SENTINEL-EGRESS -j RETURN
   fi
-  $IPT -I DOCKER-USER 1 -s "$SUBNET" ! -d "$SUBNET" -j ARTEX-EGRESS
+  $IPT -I DOCKER-USER 1 -s "$SUBNET" ! -d "$SUBNET" -j SENTINEL-EGRESS
 
   # Optional: close the host-proxy bypass. Traffic from the container to the host/gateway goes
   # through the host INPUT chain, not DOCKER-USER (FORWARD), so a proxy bound on the gateway is
   # otherwise reachable. Off by default because it edits the host INPUT chain.
   if [ "$MODE" = enforce ] && [ "$FILTER_GW" = 1 ]; then
-    $IPT -N ARTEX-EGRESS-HOST 2>/dev/null || $IPT -F ARTEX-EGRESS-HOST
-    $IPT -A ARTEX-EGRESS-HOST -p udp --dport 53 -j RETURN
-    $IPT -A ARTEX-EGRESS-HOST -p tcp --dport 53 -j RETURN
-    $IPT -A ARTEX-EGRESS-HOST -j REJECT --reject-with icmp-port-unreachable
-    $IPT -I INPUT 1 -s "$SUBNET" -d "$GW" -j ARTEX-EGRESS-HOST
+    $IPT -N SENTINEL-EGRESS-HOST 2>/dev/null || $IPT -F SENTINEL-EGRESS-HOST
+    $IPT -A SENTINEL-EGRESS-HOST -p udp --dport 53 -j RETURN
+    $IPT -A SENTINEL-EGRESS-HOST -p tcp --dport 53 -j RETURN
+    $IPT -A SENTINEL-EGRESS-HOST -j REJECT --reject-with icmp-port-unreachable
+    $IPT -I INPUT 1 -s "$SUBNET" -d "$GW" -j SENTINEL-EGRESS-HOST
     log "gateway filter on: only DNS to $GW allowed from the subnet"
   fi
 
@@ -175,7 +175,7 @@ write_dnsmasq_conf() {
     fi
   } > "$CONF"
   local n=0
-  while read -r d; do echo "ipset=/$d/artex_allow" >> "$CONF"; n=$((n+1)); done < <(read_list "$LISTS/base-domains.txt"; read_list "$LISTS/scope-domains.txt")
+  while read -r d; do echo "ipset=/$d/sentinelprecision_allow" >> "$CONF"; n=$((n+1)); done < <(read_list "$LISTS/base-domains.txt"; read_list "$LISTS/scope-domains.txt")
   log "allowed domain suffixes: $n"
 }
 

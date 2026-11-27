@@ -14,8 +14,8 @@ func TestExecutorEnvAllowlist(t *testing.T) {
 	env := []string{
 		"PATH=/usr/bin", "LANG=C.UTF-8", "LC_ALL=C", "LC_CTYPE=C.UTF-8", "HTTP_PROXY=http://127.0.0.1:8788",
 		"SSL_CERT_FILE=/ca.pem", "PLAYWRIGHT_BROWSERS_PATH=/pw", envExecHome + "=/data/exec-home",
-		"ARTEX_PG_DSN=postgres://artex:pw@postgres/artex", "OPENAI_API_KEY=sk-x",
-		"MY_COMPANY_TOKEN=t0k3n", "LC_REVIEW_SECRET=leak", "ARTEX_NOISE_PROFILE=quiet", "MCP_TOKEN=abc",
+		"SENTINEL_PRECISION_PG_DSN=postgres://sentinelprecision:pw@postgres/sentinelprecision", "OPENAI_API_KEY=sk-x",
+		"MY_COMPANY_TOKEN=t0k3n", "LC_REVIEW_SECRET=leak", "SENTINEL_PRECISION_NOISE_PROFILE=quiet", "MCP_TOKEN=abc",
 		envExecKeep + "=MCP_TOKEN", "malformed", "=empty-name",
 	}
 	got := strings.Join(executorEnv(env, map[string]bool{"MCP_TOKEN": true}), "|")
@@ -54,10 +54,10 @@ func TestWithExecKeep(t *testing.T) {
 
 // agentProcessEnv filters only for an executor.
 func TestAgentProcessEnv(t *testing.T) {
-	t.Setenv("ARTEX_ISOLATION_CANARY", "canary")
+	t.Setenv("SENTINEL_PRECISION_ISOLATION_CANARY", "canary")
 	has := func(env []string) bool {
 		for _, kv := range env {
-			if strings.HasPrefix(kv, "ARTEX_ISOLATION_CANARY=") {
+			if strings.HasPrefix(kv, "SENTINEL_PRECISION_ISOLATION_CANARY=") {
 				return true
 			}
 		}

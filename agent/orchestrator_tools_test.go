@@ -9,9 +9,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
 	"github.com/Autumn-27/norma/llm"
 	actool "github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 // captureToolNamesProvider records the tool names offered to the model on its

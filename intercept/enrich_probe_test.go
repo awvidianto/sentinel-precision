@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Autumn-27/artex/enrich"
-	"github.com/Autumn-27/artex/intercept"
+	"github.com/awvidianto/sentinel-precision/enrich"
+	"github.com/awvidianto/sentinel-precision/intercept"
 )
 
 // F13: the HTTP probe of the enrich engine connects through the pinned dialer.

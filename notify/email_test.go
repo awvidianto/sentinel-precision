@@ -148,7 +148,7 @@ func emailCfg(t *testing.T, f *fakeSMTP, extra map[string]any) map[string]any {
 	cfg := map[string]any{
 		"host": host,
 		"port": float64(port),
-		"from": "artex@example.com",
+		"from": "sentinelprecision@example.com",
 		"to":   []any{"a@example.com", "b@example.com"},
 	}
 	for k, v := range extra {
@@ -160,13 +160,13 @@ func emailCfg(t *testing.T, f *fakeSMTP, extra map[string]any) map[string]any {
 func TestEmailSendDeliversFullMessage(t *testing.T) {
 	f := newFakeSMTP(t)
 	f.advertiseAuth = true
-	cfg := emailCfg(t, f, map[string]any{"username": "artex", "password": "pw"})
+	cfg := emailCfg(t, f, map[string]any{"username": "sentinelprecision", "password": "pw"})
 
 	if _, err := (emailChannel{}).Send(context.Background(), cfg, singleMsg()); err != nil {
 		t.Fatalf("delivery failed: %v", err)
 	}
 	// The envelope stages must all happen: sender, both recipients, DATA.
-	for _, want := range []string{"MAIL FROM:<artex@example.com>", "RCPT TO:<a@example.com>", "RCPT TO:<b@example.com>", "DATA", "AUTH", "QUIT"} {
+	for _, want := range []string{"MAIL FROM:<sentinelprecision@example.com>", "RCPT TO:<a@example.com>", "RCPT TO:<b@example.com>", "DATA", "AUTH", "QUIT"} {
 		if !f.sawCommand(want) {
 			t.Errorf("SMTP session missing %q, actual commands: %v", want, f.commands)
 		}
@@ -195,7 +195,7 @@ func TestEmailSendDeliversFullMessage(t *testing.T) {
 func TestEmailMessageHasDateAndMessageID(t *testing.T) {
 	ids := map[string]bool{}
 	for range 2 {
-		raw, err := buildEmailMessage("artex@example.com", []string{"a@example.com"}, singleMsg())
+		raw, err := buildEmailMessage("sentinelprecision@example.com", []string{"a@example.com"}, singleMsg())
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -283,7 +283,7 @@ func TestEmailSendRefusesPlaintextCredentials(t *testing.T) {
 		"port":     float64(port),
 		"from":     "a@example.com",
 		"to":       []any{"b@example.com"},
-		"username": "artex",
+		"username": "sentinelprecision",
 		"password": "pw",
 	}
 	_, err := (emailChannel{}).Send(context.Background(), cfg, singleMsg())

@@ -1,4 +1,4 @@
-# Domain suffixes always allowed for the ARTEX container (a suffix covers all subdomains).
+# Domain suffixes always allowed for the Sentinel Precision container (a suffix covers all subdomains).
 # Resolved IPs are added to the allowlist automatically. Reload: docker compose restart egress-guard
 
 # --- LLM providers (keep only the one you use) ---

@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-const assessmentUserAgent = "ARTEX-Assessment/1.0"
+const assessmentUserAgent = "SentinelPrecision-Assessment/1.0"
 
 var (
 	assessmentReference = regexp.MustCompile(`^[A-Za-z0-9._-]{0,64}$`)

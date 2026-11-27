@@ -42,7 +42,7 @@ func consoleHeaders(h http.Header) {
 
 // isHTTPS reports whether the request reached us over TLS, either directly or
 // through a trusted proxy that says so. X-Forwarded-Proto is only believed when
-// the peer is in ARTEX_TRUSTED_PROXIES, the same rule clientIP uses: a direct
+// the peer is in SENTINEL_PRECISION_TRUSTED_PROXIES, the same rule clientIP uses: a direct
 // client could otherwise claim HTTPS and get a header it cannot back up.
 func (s *Server) isHTTPS(r *http.Request) bool {
 	if r.TLS != nil {

@@ -1,9 +1,9 @@
 # Chat Bot (Inbound Chat Bridge)
 
-The chat bot lets an operator talk to ARTEX from a chat app instead of the web UI. Telegram is the
+The chat bot lets an operator talk to Sentinel Precision from a chat app instead of the web UI. Telegram is the
 first transport. This page describes the bridge core: connecting a bot, the chat allowlist and how
 updates are processed. Task commands, the main-agent conversation and remote approvals build on it
-([issue #5](https://github.com/BaaRai/ARTEX/issues/5)).
+([issue #5](https://github.com/awvidianto/sentinel-precision/issues/5)).
 
 Outbound notifications (pushing findings to a chat) are a separate feature under
 **System → Notifications** and keep working without the bot.
@@ -12,7 +12,7 @@ Outbound notifications (pushing findings to a chat) are a separate feature under
 
 ## Setup
 
-1. Create a bot with [@BotFather](https://t.me/BotFather) and copy its token. Give ARTEX a bot of
+1. Create a bot with [@BotFather](https://t.me/BotFather) and copy its token. Give Sentinel Precision a bot of
    its own: Telegram allows one consumer per token, so a token already used by another poller or by
    a webhook fails with a conflict error.
 2. Open **System → Chat bot**, paste the token, switch the bot on and save. **Test connection** asks
@@ -36,12 +36,12 @@ Outbound notifications (pushing findings to a chat) are a separate feature under
   only the scheme and host of the API address). Changing the API address requires entering the
   token again, so a stored token is never sent to a new host. The API address must use `https`:
   the token travels in the URL path, and the replies are the updates the bot acts on. Plain `http`
-  is accepted only with `ARTEX_NOTIFY_ALLOW_LOCAL=1`, for a local test server.
+  is accepted only with `SENTINEL_PRECISION_NOTIFY_ALLOW_LOCAL=1`, for a local test server.
 - **Same network guard as notifications.** Calls refuse loopback and link-local addresses (including
-  cloud metadata) unless `ARTEX_NOTIFY_ALLOW_LOCAL=1`, and never follow a cross-host redirect.
+  cloud metadata) unless `SENTINEL_PRECISION_NOTIFY_ALLOW_LOCAL=1`, and never follow a cross-host redirect.
 - **No replays.** The update cursor is committed before a batch is acted on, so a crash loses a
-  batch rather than running it twice. Messages older than two minutes when they reach ARTEX (for
-  example a backlog queued while ARTEX was down) are dropped and logged instead of executed.
+  batch rather than running it twice. Messages older than two minutes when they reach Sentinel Precision (for
+  example a backlog queued while Sentinel Precision was down) are dropped and logged instead of executed.
 - **Message text is not logged.** Logs (tag `[tgbot]`) record the chat, the sender and the decision.
 
 ## Configuration changes

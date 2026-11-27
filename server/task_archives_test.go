@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/artex/db"
+	"github.com/awvidianto/sentinel-precision/db"
 )
 
 func TestTaskArchiveAPIQueueListAndLimits(t *testing.T) {

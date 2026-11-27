@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"net/url"
 
-	"github.com/Autumn-27/artex/egress"
-	"github.com/Autumn-27/artex/intercept"
 	actool "github.com/Autumn-27/norma/tool"
+	"github.com/awvidianto/sentinel-precision/egress"
+	"github.com/awvidianto/sentinel-precision/intercept"
 )
 
 // withWebFetch returns tools plus the WebFetch tool of an agent session. Every

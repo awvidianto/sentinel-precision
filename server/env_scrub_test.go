@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Autumn-27/artex/agent"
+	"github.com/awvidianto/sentinel-precision/agent"
 )
 
 // A child process spawned after startup must not see the startup secrets, while
@@ -20,7 +20,7 @@ func TestScrubSecretEnvHidesSecretsFromChildren(t *testing.T) {
 	for _, k := range secretEnv {
 		t.Setenv(k, "leak-"+k)
 	}
-	t.Setenv("ARTEX_SCRUB_KEEP", "kept")
+	t.Setenv("SENTINEL_PRECISION_SCRUB_KEEP", "kept")
 
 	ScrubSecretEnv()
 
@@ -34,7 +34,7 @@ func TestScrubSecretEnvHidesSecretsFromChildren(t *testing.T) {
 			t.Errorf("%s still reaches child processes", k)
 		}
 	}
-	if !strings.Contains(env, "\nARTEX_SCRUB_KEEP=kept\n") {
+	if !strings.Contains(env, "\nSENTINEL_PRECISION_SCRUB_KEEP=kept\n") {
 		t.Errorf("non-secret variable did not reach the child process")
 	}
 }
@@ -45,12 +45,12 @@ func TestScrubSecretEnvClearsBedrockGatewayCredentials(t *testing.T) {
 		t.Setenv(k, os.Getenv(k))
 	}
 	// Set these independently of secretEnv so the test catches missing entries.
-	t.Setenv("ARTEX_LLM_API_KEY", "synthetic-gateway-token")
-	t.Setenv("ARTEX_LLM_CUSTOM_HEADERS", "X-Example-Secret: synthetic-header-value")
+	t.Setenv("SENTINEL_PRECISION_LLM_API_KEY", "synthetic-gateway-token")
+	t.Setenv("SENTINEL_PRECISION_LLM_CUSTOM_HEADERS", "X-Example-Secret: synthetic-header-value")
 
 	ScrubSecretEnv()
 
-	for _, k := range []string{"ARTEX_LLM_API_KEY", "ARTEX_LLM_CUSTOM_HEADERS"} {
+	for _, k := range []string{"SENTINEL_PRECISION_LLM_API_KEY", "SENTINEL_PRECISION_LLM_CUSTOM_HEADERS"} {
 		if _, ok := os.LookupEnv(k); ok {
 			t.Errorf("%s is still set after ScrubSecretEnv", k)
 		}
@@ -63,10 +63,10 @@ func TestScrubSecretEnvClearsBedrockGatewayCredentials(t *testing.T) {
 func TestNewAppliesSecretScrubOption(t *testing.T) {
 	// t.Setenv restores both after the test: the scrub unsets them for the rest
 	// of this process, and later tests still need the DSN.
-	if dsn := os.Getenv("ARTEX_PG_DSN"); dsn != "" {
-		t.Setenv("ARTEX_PG_DSN", dsn)
+	if dsn := os.Getenv("SENTINEL_PRECISION_PG_DSN"); dsn != "" {
+		t.Setenv("SENTINEL_PRECISION_PG_DSN", dsn)
 	}
-	t.Setenv("ARTEX_SECRET_KEY", os.Getenv("ARTEX_SECRET_KEY"))
+	t.Setenv("SENTINEL_PRECISION_SECRET_KEY", os.Getenv("SENTINEL_PRECISION_SECRET_KEY"))
 	t.Setenv("ANTHROPIC_API_KEY", "scrub-probe")
 	t.Setenv("OPENAI_API_KEY", "scrub-probe")
 
@@ -93,21 +93,21 @@ func TestSecretEnvCoversCredentialURLs(t *testing.T) {
 	if err != nil {
 		t.Skip("no sh in PATH")
 	}
-	for _, k := range []string{"ARTEX_LLM_PROXY", "ARTEX_LLM_BASE_URL"} {
+	for _, k := range []string{"SENTINEL_PRECISION_LLM_PROXY", "SENTINEL_PRECISION_LLM_BASE_URL"} {
 		if !isSecretName(k) {
 			t.Errorf("%s is not in secretEnv", k)
 		}
 	}
 	// ScrubSecretEnv unsets every name in secretEnv for the rest of the test
 	// binary, and t.Setenv restores only the names it set. Setting all of them
-	// here gives ARTEX_PG_DSN and ARTEX_SECRET_KEY back to the tests that follow.
+	// here gives SENTINEL_PRECISION_PG_DSN and SENTINEL_PRECISION_SECRET_KEY back to the tests that follow.
 	for _, k := range secretEnv {
 		t.Setenv(k, "probe-"+k)
 	}
-	t.Setenv("ARTEX_LLM_PROVIDER", "openai")
+	t.Setenv("SENTINEL_PRECISION_LLM_PROVIDER", "openai")
 	t.Setenv("OPENAI_API_KEY", "sk-test")
-	t.Setenv("ARTEX_LLM_PROXY", "http://proxyuser:proxypass@proxy.internal:3128")
-	t.Setenv("ARTEX_LLM_BASE_URL", "https://apiuser:apipass@llm.internal/v1")
+	t.Setenv("SENTINEL_PRECISION_LLM_PROXY", "http://proxyuser:proxypass@proxy.internal:3128")
+	t.Setenv("SENTINEL_PRECISION_LLM_BASE_URL", "https://apiuser:apipass@llm.internal/v1")
 	cfg, ok := agent.FromEnv()
 	if !ok || cfg.Proxy != "http://proxyuser:proxypass@proxy.internal:3128" || cfg.BaseURL != "https://apiuser:apipass@llm.internal/v1" {
 		t.Fatalf("FromEnv must read the URLs before the scrub: ok=%v proxy=%q base=%q", ok, cfg.Proxy, cfg.BaseURL)
